@@ -39,11 +39,47 @@ function sortNumericsInternal(item: readonly (bigint | number)[], options: SortO
 	}
 	return (restPlaceFirst ? [...partRests, ...partSpecials] : [...partSpecials, ...partRests]);
 }
+/**
+ * Sort the numerics.
+ * @param {readonly bigint[]} item Numerics that need to sort.
+ * @param {SortOptions<bigint>} [options={}] Options.
+ * @returns {bigint[]} A sorted numerics.
+ */
 export function sortNumerics(item: readonly bigint[], options?: SortOptions<bigint>): bigint[];
+/**
+ * Sort the numerics.
+ * @param {Set<bigint>} item Numerics that need to sort.
+ * @param {SortOptions<bigint>} [options={}] Options.
+ * @returns {Set<bigint>} A sorted numerics.
+ */
 export function sortNumerics(item: Set<bigint>, options?: SortOptions<bigint>): Set<bigint>;
+/**
+ * Sort the numerics.
+ * @param {readonly number[]} item Numerics that need to sort.
+ * @param {SortOptions<number>} [options={}] Options.
+ * @returns {number[]} A sorted numerics.
+ */
 export function sortNumerics(item: readonly number[], options?: SortOptions<number>): number[];
+/**
+ * Sort the numerics.
+ * @param {Set<number>} item Numerics that need to sort.
+ * @param {SortOptions<number>} [options={}] Options.
+ * @returns {Set<number>} A sorted numerics.
+ */
 export function sortNumerics(item: Set<number>, options?: SortOptions<number>): Set<number>;
+/**
+ * Sort the numerics.
+ * @param {readonly (bigint | number)[]} item Numerics that need to sort.
+ * @param {SortOptions<bigint | number>} [options={}] Options.
+ * @returns {(bigint | number)[]} A sorted numerics.
+ */
 export function sortNumerics(item: readonly (bigint | number)[], options?: SortOptions<bigint | number>): (bigint | number)[];
+/**
+ * Sort the numerics.
+ * @param {Set<bigint | number>} item Numerics that need to sort.
+ * @param {SortOptions<bigint | number>} [options={}] Options.
+ * @returns {Set<bigint | number>} A sorted numerics.
+ */
 export function sortNumerics(item: Set<bigint | number>, options?: SortOptions<bigint | number>): Set<bigint | number>;
 export function sortNumerics(item: (readonly (bigint | number)[]) | Set<bigint | number>, options: SortOptions<bigint | number> = {}): (bigint | number)[] | Set<bigint | number> {
 	if (item instanceof Set) {
@@ -52,7 +88,21 @@ export function sortNumerics(item: (readonly (bigint | number)[]) | Set<bigint |
 	return sortNumericsInternal(item, options);
 }
 export default sortNumerics;
+/**
+ * Sort the numerics, with generic.
+ * @template {bigint | number} T
+ * @param {readonly T[]} item Numerics that need to sort.
+ * @param {SortOptions<T>} [options={}] Options.
+ * @returns {T[]} A sorted numerics.
+ */
 export function sortNumericsGeneric<T extends bigint | number>(item: readonly T[], options?: SortOptions<T>): T[];
+/**
+ * Sort the numerics, with generic.
+ * @template {bigint | number} T
+ * @param {Set<T>} item Numerics that need to sort.
+ * @param {SortOptions<T>} [options={}] Options.
+ * @returns {Set<T>} A sorted numerics.
+ */
 export function sortNumericsGeneric<T extends bigint | number>(item: Set<T>, options?: SortOptions<T>): Set<T>;
 export function sortNumericsGeneric<T extends bigint | number>(item: (readonly T[]) | Set<T>, options: SortOptions<T> = {}): T[] | Set<T> {
 	//@ts-ignore Overloads.

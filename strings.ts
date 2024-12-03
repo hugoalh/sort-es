@@ -9,6 +9,10 @@ export type {
 	SortOptions
 };
 export interface SortStringsOptions {
+	/**
+	 * Whether to correctly handle numeric.
+	 * @default {false}
+	 */
 	smartNumeric?: boolean;
 }
 const regexpDigits = /\d+/g;
@@ -79,7 +83,19 @@ function sortStringsInternal(item: readonly string[], options: SortOptions<strin
 	}
 	return (restPlaceFirst ? [...partRests, ...partSpecials] : [...partSpecials, ...partRests]);
 }
+/**
+ * Sort the strings.
+ * @param {readonly string[]} item Strings that need to sort.
+ * @param {SortOptions<string> & SortStringsOptions} [options={}] Options.
+ * @returns {string[]} A sorted strings.
+ */
 export function sortStrings(item: readonly string[], options?: SortOptions<string> & SortStringsOptions): string[];
+/**
+ * Sort the strings.
+ * @param {Set<string>} item Strings that need to sort.
+ * @param {SortOptions<string> & SortStringsOptions} [options={}] Options.
+ * @returns {Set<string>} A sorted strings.
+ */
 export function sortStrings(item: Set<string>, options?: SortOptions<string> & SortStringsOptions): Set<string>;
 export function sortStrings(item: (readonly string[]) | Set<string>, options: SortOptions<string> & SortStringsOptions = {}): string[] | Set<string> {
 	if (item instanceof Set) {
@@ -88,7 +104,21 @@ export function sortStrings(item: (readonly string[]) | Set<string>, options: So
 	return sortStringsInternal(item, options);
 }
 export default sortStrings;
+/**
+ * Sort the strings, with generic.
+ * @template {string} T
+ * @param {readonly T[]} item Strings that need to sort.
+ * @param {SortOptions<T> & SortStringsOptions} [options={}] Options.
+ * @returns {T[]} A sorted strings.
+ */
 export function sortStringsGeneric<T extends string>(item: readonly T[], options?: SortOptions<T> & SortStringsOptions): T[];
+/**
+ * Sort the strings, with generic.
+ * @template {string} T
+ * @param {Set<T>} item Strings that need to sort.
+ * @param {SortOptions<T> & SortStringsOptions} [options={}] Options.
+ * @returns {Set<T>} A sorted strings.
+ */
 export function sortStringsGeneric<T extends string>(item: Set<T>, options?: SortOptions<T> & SortStringsOptions): Set<T>;
 export function sortStringsGeneric<T extends string>(item: (readonly T[]) | Set<T>, options: SortOptions<string> & SortStringsOptions = {}): T[] | Set<T> {
 	//@ts-ignore Overloads.
