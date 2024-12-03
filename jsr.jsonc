@@ -1,0 +1,39 @@
+{
+	"$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
+	"name": "@hugoalh/sort",
+	"version": "0.1.0",
+	"exports": {
+		"./collection": "./collection.ts",
+		"./numerics": "./numerics.ts",
+		"./strings": "./strings.ts",
+		".": "./mod.ts"
+	},
+	"imports": {
+	},
+	"publish": {
+		"exclude": [
+			"**/*_bench.ts",
+			"**/*_bench.tsx",
+			"**/*_test.ts",
+			"**/*_test.tsx",
+			"**/*.bench.ts",
+			"**/*.bench.tsx",
+			"**/*.test.ts",
+			"**/*.test.tsx",
+			"**/bench.ts",
+			"**/bench.tsx",
+			"**/test.ts",
+			"**/test.tsx",
+			"npm/**",
+			".dnt.ts"
+		],
+		"include": [
+			"**/*.json",
+			"**/*.ts",
+			"**/*.tsx",
+			"jsr.jsonc",
+			"LICENSE*.md",
+			"README*.md"
+		]
+	}
+}
