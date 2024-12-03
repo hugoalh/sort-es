@@ -87,6 +87,18 @@ An ES (JavaScript & TypeScript) module for enhanced sort operation.
   function sortStringsGeneric<T extends string>(item: readonly T[], options?: SortOptions<T> & SortStringsOptions): T[];
   function sortStringsGeneric<T extends string>(item: Set<T>, options?: SortOptions<T> & SortStringsOptions): Set<T>;
   ```
+- ```ts
+  interface SortOptions<T> {
+    restOrder?: SortOrder | keyof typeof SortOrder;
+    restPlaceFirst?: boolean;
+    specials?: readonly T[];
+  }
+  ```
+- ```ts
+  interface SortStringsOptions {
+    smartNumeric?: boolean;
+  }
+  ```
 
 > [!NOTE]
 > - For the full or prettier documentation, can visit via:
