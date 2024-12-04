@@ -46,7 +46,7 @@ function sortCollectionByKeysInternal<V>(item: Map<bigint | number | string, V>,
 			partRests.set(itemKey, item.get(itemKey)!);
 		}
 	} else {
-		throw new TypeError();
+		throw new TypeError(`Collection keys are not type of numerics (big integers and numbers) or strings!`);
 	}
 	const result: Map<bigint | number | string, V> = new Map<bigint | number | string, V>();
 	if (restPlaceFirst) {
