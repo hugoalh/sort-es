@@ -31,5 +31,8 @@ Deno.test("Mix Normal 2", { permissions: "none" }, () => {
 	assertEquals(sortNumerics([1n, 2n, 2]), [1n, 2n, 2]);
 });
 Deno.test("Mix Normal 3", { permissions: "none" }, () => {
+	assertEquals(sortNumerics([1n, 2, 2n]), [1n, 2, 2n]);
+});
+Deno.test("Mix Normal 4", { permissions: "none" }, () => {
 	assertEquals(sortNumerics([1.1, 1.2, 1n, 0]), [0, 1n, 1.1, 1.2]);
 });

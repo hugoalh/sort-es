@@ -20,7 +20,7 @@ function sortCollectionByKeysInternal<V>(item: Map<bigint | number | string, V>,
 		smartNumeric = false,
 		specials = []
 	}: SortOptions<bigint | number | string> & SortStringsOptions = options;
-	const itemKeys: (bigint | number | string)[] = Array.from(item.keys());
+	const itemKeys: readonly (bigint | number | string)[] = Array.from(item.keys());
 	const partSpecials: Map<bigint | number | string, V> = new Map<bigint | number | string, V>();
 	const partRests: Map<bigint | number | string, V> = new Map<bigint | number | string, V>();
 	const [partSpecialsKey, partRestsKey] = partitionSpecials(itemKeys, specials);
@@ -46,7 +46,7 @@ function sortCollectionByKeysInternal<V>(item: Map<bigint | number | string, V>,
 			partRests.set(itemKey, item.get(itemKey)!);
 		}
 	} else {
-		throw new TypeError(`Collection keys are not type of numerics (big integers and numbers) or strings!`);
+		throw new TypeError(`Collection keys are not type of numerics or strings!`);
 	}
 	const result: Map<bigint | number | string, V> = new Map<bigint | number | string, V>();
 	if (restPlaceFirst) {

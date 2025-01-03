@@ -56,7 +56,7 @@ function sortStringsInternal(item: readonly string[], options: SortOptions<strin
 							return 1;
 						}
 						if (typeof aPart === "undefined" && typeof bPart === "undefined") {
-							// This is impossible to happen, just for fulfill type guard.
+							// This is impossible to happen, just for fulfill the type guard.
 							break;
 						}
 						if (aPart === bPart) {
