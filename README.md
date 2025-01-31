@@ -89,7 +89,7 @@ An ES (JavaScript & TypeScript) module for enhanced sort operation.
   ```
 - ```ts
   interface SortOptions<T> {
-    restOrder?: SortOrder | keyof typeof SortOrder;
+    restOrder?: SortOrder;
     restPlaceFirst?: boolean;
     specials?: readonly T[];
   }
