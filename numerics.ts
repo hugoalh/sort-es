@@ -1,9 +1,9 @@
 import {
 	compareNumerics,
-	getSortOrderValidValues,
 	partitionSpecials,
-	SortOrder,
-	type SortOptions
+	resolveSortOrder,
+	type SortOptions,
+	type SortOrder,
 } from "./_common.ts";
 export type {
 	SortOptions
@@ -14,28 +14,21 @@ function sortNumericsInternal(item: readonly (bigint | number)[], options: SortO
 		restPlaceFirst = false,
 		specials = []
 	}: SortOptions<bigint | number> = options;
-	const [partSpecials, partRests] = partitionSpecials(item, specials);
-	const restOrderFmt: `${SortOrder}` | undefined = SortOrder[restOrder];
-	switch (restOrderFmt) {
-		case "ascending":
-		case "descending":
-			partRests.sort((a: bigint | number, b: bigint | number): number => {
-				if (typeof a === "bigint" && typeof b === "bigint") {
-					return compareNumerics(a, b);
-				}
-				if (typeof a === "number" && typeof b === "number") {
-					return compareNumerics(a, b);
-				}
-				return compareNumerics(Number(a), Number(b));
-			});
-			if (restOrderFmt === "descending") {
-				partRests.reverse();
+	const [partSpecials, partRests]: [specials: (bigint | number)[], rests: (bigint | number)[]] = partitionSpecials(item, specials);
+	const restOrderFmt: SortOrder = resolveSortOrder(restOrder);
+	if (restOrderFmt !== "keep") {
+		partRests.sort((a: bigint | number, b: bigint | number): number => {
+			if (typeof a === "bigint" && typeof b === "bigint") {
+				return compareNumerics(a, b);
 			}
-			break;
-		case "keep":
-			break;
-		default:
-			throw new RangeError(`\`${restOrder}\` is not a valid sort order! Only accept these values: ${getSortOrderValidValues()}`);
+			if (typeof a === "number" && typeof b === "number") {
+				return compareNumerics(a, b);
+			}
+			return compareNumerics(Number(a), Number(b));
+		});
+		if (restOrderFmt === "descending") {
+			partRests.reverse();
+		}
 	}
 	return (restPlaceFirst ? [...partRests, ...partSpecials] : [...partSpecials, ...partRests]);
 }

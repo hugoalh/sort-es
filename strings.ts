@@ -1,9 +1,9 @@
 import {
 	compareNumerics,
-	getSortOrderValidValues,
 	partitionSpecials,
-	SortOrder,
-	type SortOptions
+	resolveSortOrder,
+	type SortOptions,
+	type SortOrder
 } from "./_common.ts";
 export type {
 	SortOptions
@@ -36,50 +36,43 @@ function sortStringsInternal(item: readonly string[], options: SortOptions<strin
 		smartNumeric = false,
 		specials = []
 	}: SortOptions<string> & SortStringsOptions = options;
-	const [partSpecials, partRests] = partitionSpecials(item, specials);
-	const restOrderFmt: `${SortOrder}` | undefined = SortOrder[restOrder];
-	switch (restOrderFmt) {
-		case "ascending":
-		case "descending":
-			if (smartNumeric) {
-				partRests.sort((a: string, b: string): number => {
-					const aFmt: readonly (bigint | string)[] = dissectStringNumeric(a);
-					const bFmt: readonly (bigint | string)[] = dissectStringNumeric(b);
-					const sections: number = Math.max(aFmt.length, bFmt.length);
-					for (let index: number = 0; index < sections; index += 1) {
-						const aPart: bigint | string | undefined = aFmt[index];
-						const bPart: bigint | string | undefined = bFmt[index];
-						if (typeof aPart === "undefined" && typeof bPart !== "undefined") {
-							return -1;
-						}
-						if (typeof aPart !== "undefined" && typeof bPart === "undefined") {
-							return 1;
-						}
-						if (typeof aPart === "undefined" && typeof bPart === "undefined") {
-							// This is impossible to happen, just for fulfill the type guard.
-							break;
-						}
-						if (aPart === bPart) {
-							continue;
-						}
-						if (typeof aPart === "bigint" && typeof bPart === "bigint") {
-							return compareNumerics(aPart, bPart);
-						}
-						return (([aPart, bPart].sort()[0] === aPart) ? -1 : 1);
+	const [partSpecials, partRests]: [specials: string[], rests: string[]] = partitionSpecials(item, specials);
+	const restOrderFmt: SortOrder = resolveSortOrder(restOrder);
+	if (restOrderFmt !== "keep") {
+		if (smartNumeric) {
+			partRests.sort((a: string, b: string): number => {
+				const aFmt: readonly (bigint | string)[] = dissectStringNumeric(a);
+				const bFmt: readonly (bigint | string)[] = dissectStringNumeric(b);
+				const sections: number = Math.max(aFmt.length, bFmt.length);
+				for (let index: number = 0; index < sections; index += 1) {
+					const aPart: bigint | string | undefined = aFmt[index];
+					const bPart: bigint | string | undefined = bFmt[index];
+					if (typeof aPart === "undefined" && typeof bPart !== "undefined") {
+						return -1;
 					}
-					return 0;
-				});
-			} else {
-				partRests.sort();
-			}
-			if (restOrderFmt === "descending") {
-				partRests.reverse();
-			}
-			break;
-		case "keep":
-			break;
-		default:
-			throw new RangeError(`\`${restOrder}\` is not a valid sort order! Only accept these values: ${getSortOrderValidValues()}`);
+					if (typeof aPart !== "undefined" && typeof bPart === "undefined") {
+						return 1;
+					}
+					if (typeof aPart === "undefined" && typeof bPart === "undefined") {
+						// This is impossible to happen, just for fulfill the type guard.
+						break;
+					}
+					if (aPart === bPart) {
+						continue;
+					}
+					if (typeof aPart === "bigint" && typeof bPart === "bigint") {
+						return compareNumerics(aPart, bPart);
+					}
+					return (([aPart, bPart].sort()[0] === aPart) ? -1 : 1);
+				}
+				return 0;
+			});
+		} else {
+			partRests.sort();
+		}
+		if (restOrderFmt === "descending") {
+			partRests.reverse();
+		}
 	}
 	return (restPlaceFirst ? [...partRests, ...partSpecials] : [...partSpecials, ...partRests]);
 }

@@ -23,7 +23,7 @@ function sortCollectionByKeysInternal<V>(item: Map<bigint | number | string, V>,
 	const itemKeys: readonly (bigint | number | string)[] = Array.from(item.keys());
 	const partSpecials: Map<bigint | number | string, V> = new Map<bigint | number | string, V>();
 	const partRests: Map<bigint | number | string, V> = new Map<bigint | number | string, V>();
-	const [partSpecialsKey, partRestsKey] = partitionSpecials(itemKeys, specials);
+	const [partSpecialsKey, partRestsKey]: [specials: (string | number | bigint)[], rests: (string | number | bigint)[]] = partitionSpecials(itemKeys, specials);
 	for (const partSpecialKey of partSpecialsKey) {
 		partSpecials.set(partSpecialKey, item.get(partSpecialKey)!);
 	}
