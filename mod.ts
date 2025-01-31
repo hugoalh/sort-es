@@ -1,6 +1,6 @@
-export {
-	SortOrder,
-	type SortOptions
+export type {
+	SortOptions,
+	SortOrder
 } from "./_common.ts";
 export {
 	sortCollectionByKeys,
