@@ -10,25 +10,26 @@ const sortOrders: Readonly<Record<string, SortOrder>> = {
 	k: "keep",
 	keep: "keep"
 };
-export interface SortOptions<T> {
+export interface SortOptions {
 	/**
-	 * Which order the rest elements/keys should use to sort.
+	 * Which order the rest elements should use to sort.
 	 * @default {"ascending"}
 	 */
 	restOrder?: SortOrder;
 	/**
-	 * Whether the rest elements/keys should place first than the special elements/keys.
+	 * Whether the rest elements should place first than the special elements.
 	 * @default {false}
 	 */
 	restPlaceFirst?: boolean;
 	/**
-	 * Sort these special elements/keys in this specify order.
+	 * Whether to correctly handle numerics for the element with type of string, sort by mathematics instead of ASCII code.
+	 * @default {false}
 	 */
-	specials?: readonly T[];
+	smartNumeric?: boolean;
 }
-export function compareNumerics(a: bigint, b: bigint): number;
-export function compareNumerics(a: number, b: number): number;
-export function compareNumerics(a: bigint | number, b: bigint | number): number {
+function compareNumerics(a: bigint, b: bigint): number;
+function compareNumerics(a: number, b: number): number;
+function compareNumerics(a: bigint | number, b: bigint | number): number {
 	if (a < b) {
 		return -1;
 	}
@@ -37,21 +38,85 @@ export function compareNumerics(a: bigint | number, b: bigint | number): number 
 	}
 	return 0;
 }
-export function partitionSpecials<T>(item: readonly T[], specials: readonly T[]): [specials: T[], rests: T[]] {
-	const partSpecials: T[] = [];
-	const partRests: T[] = [];
-	for (const element of item) {
-		specials.includes(element) ? partSpecials.push(element) : partRests.push(element);
+const regexpDigits = /\d+/g;
+function dissectStringNumeric(item: string): (bigint | string)[] {
+	const result: (bigint | string)[] = [];
+	let cursor: number = 0;
+	for (const element of item.matchAll(regexpDigits)) {
+		if (cursor < element.index) {
+			result.push(item.slice(cursor, element.index));
+		}
+		result.push(BigInt(element[0]));
+		cursor = element.index + element[0].length;
 	}
-	partSpecials.sort((a: T, b: T): number => {
-		return (specials.indexOf(a) - specials.indexOf(b));
-	});
-	return [partSpecials, partRests];
+	result.push(item.slice(cursor, item.length));
+	return result;
 }
-export function resolveSortOrder(input: SortOrder): SortOrder {
+function resolveSortOrder(input: SortOrder): SortOrder {
 	const result: SortOrder | undefined = sortOrders[input];
 	if (typeof result === "undefined") {
 		throw new RangeError(`\`${input}\` is not a valid sort order! Only accept these values: ${Object.keys(sortOrders).sort().join(", ")}`);
+	}
+	return result;
+}
+export function sortRest<T extends bigint | number | string>(elements: readonly T[], options: Pick<SortOptions, "restOrder" | "smartNumeric">): T[] {
+	const {
+		restOrder = "ascending",
+		smartNumeric = false
+	}: Pick<SortOptions, "restOrder" | "smartNumeric"> = options;
+	const restOrderFmt: SortOrder = resolveSortOrder(restOrder);
+	const result: T[] = [...elements];
+	if (restOrderFmt !== "keep") {
+		result.sort((a: bigint | number | string, b: bigint | number | string): number => {
+			if (typeof a === "bigint" && typeof b === "bigint") {
+				return compareNumerics(a, b);
+			}
+			if (typeof a === "number" && typeof b === "number") {
+				return compareNumerics(a, b);
+			}
+			if (
+				(
+					typeof a === "bigint" ||
+					typeof a === "number"
+				) && (
+					typeof b === "bigint" ||
+					typeof b === "number"
+				)
+			) {
+				return compareNumerics(Number(a), Number(b));
+			}
+			if (typeof a === "string" && typeof b === "string" && smartNumeric) {
+				const aParts: readonly (bigint | string)[] = dissectStringNumeric(a);
+				const bParts: readonly (bigint | string)[] = dissectStringNumeric(b);
+				const partsMaximum: number = Math.max(aParts.length, bParts.length);
+				for (let index: number = 0; index < partsMaximum; index += 1) {
+					const aPart: bigint | string | undefined = aParts[index];
+					const bPart: bigint | string | undefined = bParts[index];
+					if (typeof aPart === "undefined" && typeof bPart !== "undefined") {
+						return -1;
+					}
+					if (typeof aPart !== "undefined" && typeof bPart === "undefined") {
+						return 1;
+					}
+					if (typeof aPart === "undefined" && typeof bPart === "undefined") {
+						// This is impossible to happen, just for fulfill the type guard.
+						break;
+					}
+					if (aPart === bPart) {
+						continue;
+					}
+					if (typeof aPart === "bigint" && typeof bPart === "bigint") {
+						return compareNumerics(aPart, bPart);
+					}
+					return (([aPart, bPart].sort()[0] === aPart) ? -1 : 1);
+				}
+				return 0;
+			}
+			return (([a, b].sort()[0] === a) ? -1 : 1);
+		});
+		if (restOrderFmt === "descending") {
+			result.reverse();
+		}
 	}
 	return result;
 }

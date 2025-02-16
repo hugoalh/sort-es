@@ -55,49 +55,19 @@ An ES (JavaScript & TypeScript) module for enhanced sort operation.
 ## 🧩 APIs
 
 - ```ts
-  function sortCollectionByKeys<V>(item: { [key: string]: V; }, options?: SortOptions<string> & SortStringsOptions): { [key: string]: V; };
-  function sortCollectionByKeys<V>(item: Map<bigint, V>, options?: SortOptions<bigint>): Map<bigint, V>;
-  function sortCollectionByKeys<V>(item: Map<number, V>, options?: SortOptions<number>): Map<number, V>;
-  function sortCollectionByKeys<V>(item: Map<bigint | number, V>, options?: SortOptions<bigint | number>): Map<bigint | number, V>;
-  function sortCollectionByKeys<V>(item: Map<string, V>, options?: SortOptions<string> & SortStringsOptions): Map<string, V>;
-  function sortCollectionByKeys<V>(item: Record<string, V>, options?: SortOptions<string> & SortStringsOptions): Record<string, V>;
+  function sortCollectionByKeys<K extends bigint | number | string, V>(collection: Map<K, V>, options?: SortOptions & SortCollectionByKeysOptions<K>): Map<K, V>;
+  function sortCollectionByKeys<K extends string, V>(collection: Record<K, V>, options?: SortOptions & SortCollectionByKeysOptions<K>): Record<K, V>;
   ```
 - ```ts
-  function sortCollectionByKeysGeneric<K extends bigint | number, V>(item: Map<K, V>, options?: SortOptions<K>): Map<K, V>;
-  function sortCollectionByKeysGeneric<K extends string, V>(item: Map<K, V>, options?: SortOptions<K> & SortStringsOptions): Map<K, V>;
-  function sortCollectionByKeysGeneric<K extends string, V>(item: Record<K, V>, options?: SortOptions<K> & SortStringsOptions): Record<K, V>;
+  function sortElements<T extends bigint | number | string>(elements: readonly T[], options?: SortOptions & SortElementsOptions<T>): T[];
+  function sortElements<T extends bigint | number | string>(elements: Set<T>, options?: SortOptions & SortElementsOptions<T>): Set<T>;
   ```
 - ```ts
-  function sortNumerics(item: readonly bigint[], options?: SortOptions<bigint>): bigint[];
-  function sortNumerics(item: Set<bigint>, options?: SortOptions<bigint>): Set<bigint>;
-  function sortNumerics(item: readonly number[], options?: SortOptions<number>): number[];
-  function sortNumerics(item: Set<number>, options?: SortOptions<number>): Set<number>;
-  function sortNumerics(item: readonly (bigint | number)[], options?: SortOptions<bigint | number>): (bigint | number)[];
-  function sortNumerics(item: Set<bigint | number>, options?: SortOptions<bigint | number>): Set<bigint | number>;
+  function sortElementsBySelector<T>(elements: readonly T[], selector: SortElementsSelector<T>, options?: SortOptions & SortElementsOptions<T>): T[];
+  function sortElementsBySelector<T>(elements: Set<T>, selector: SortElementsSelector<T>, options?: SortOptions & SortElementsOptions<T>): Set<T>;
   ```
 - ```ts
-  function sortNumericsGeneric<T extends bigint | number>(item: readonly T[], options?: SortOptions<T>): T[];
-  function sortNumericsGeneric<T extends bigint | number>(item: Set<T>, options?: SortOptions<T>): Set<T>;
-  ```
-- ```ts
-  function sortStrings(item: readonly string[], options?: SortOptions<string> & SortStringsOptions): string[];
-  function sortStrings(item: Set<string>, options?: SortOptions<string> & SortStringsOptions): Set<string>;
-  ```
-- ```ts
-  function sortStringsGeneric<T extends string>(item: readonly T[], options?: SortOptions<T> & SortStringsOptions): T[];
-  function sortStringsGeneric<T extends string>(item: Set<T>, options?: SortOptions<T> & SortStringsOptions): Set<T>;
-  ```
-- ```ts
-  interface SortOptions<T> {
-    restOrder?: SortOrder;
-    restPlaceFirst?: boolean;
-    specials?: readonly T[];
-  }
-  ```
-- ```ts
-  interface SortStringsOptions {
-    smartNumeric?: boolean;
-  }
+  type SortElementsSelector<T> = (element: T) => bigint | number | string;
   ```
 
 > [!NOTE]
@@ -108,10 +78,10 @@ An ES (JavaScript & TypeScript) module for enhanced sort operation.
 ## ✍️ Examples
 
 - ```ts
-  sortNumerics([1.1, 1.2, 1n, 0]);
+  sortElements([1.1, 1.2, 1n, 0]);
   //=> [0, 1n, 1.1, 1.2]
   ```
 - ```ts
-  sortStrings(["sample10.png", "sample3.png", "sample2.png", "sample5.png", "sample4.png"], { smartNumeric: true });
+  sortElements(["sample10.png", "sample3.png", "sample2.png", "sample5.png", "sample4.png"], { smartNumeric: true });
   //=> ["sample2.png", "sample3.png", "sample4.png", "sample5.png", "sample10.png"]
   ```

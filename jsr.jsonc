@@ -1,11 +1,10 @@
 {
 	"$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
 	"name": "@hugoalh/sort",
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"exports": {
 		"./collection": "./collection.ts",
-		"./numerics": "./numerics.ts",
-		"./strings": "./strings.ts",
+		"./elements": "./elements.ts",
 		".": "./mod.ts"
 	},
 	"imports": {

@@ -12,14 +12,14 @@ Deno.test("Normal 1", { permissions: "none" }, () => {
 });
 Deno.test("Special 1", { permissions: "none" }, () => {
 	const result = Object.keys(sortCollectionByKeys(sample1, {
-		specials: ["c"]
+		keysSpecial: ["c"]
 	}));
 	assertEquals(result, ["c", "a", "b", "d"]);
 });
 Deno.test("RestFirst Special 1", { permissions: "none" }, () => {
 	const result = Object.keys(sortCollectionByKeys(sample1, {
-		restPlaceFirst: true,
-		specials: ["c"]
+		keysSpecial: ["c"],
+		restPlaceFirst: true
 	}));
 	assertEquals(result, ["a", "b", "d", "c"]);
 });

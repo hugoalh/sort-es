@@ -4,14 +4,11 @@ export type {
 } from "./_common.ts";
 export {
 	sortCollectionByKeys,
-	sortCollectionByKeysGeneric
+	type SortCollectionByKeysOptions
 } from "./collection.ts";
 export {
-	sortNumerics,
-	sortNumericsGeneric
-} from "./numerics.ts";
-export {
-	sortStrings,
-	sortStringsGeneric,
-	type SortStringsOptions
-} from "./strings.ts";
+	sortElements,
+	sortElementsBySelector,
+	type SortElementsSelector,
+	type SortElementsOptions
+} from "./elements.ts";
