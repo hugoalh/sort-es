@@ -1,5 +1,5 @@
 import {
-	sortRest,
+	sort,
 	type SortOptions,
 	type SortOrder
 } from "./_common.ts";
@@ -33,7 +33,7 @@ function sortElementsInternal<T extends bigint | number | string>(elements: read
 		specials,
 		rests
 	]: [specials: readonly T[], rests: readonly T[]] = partitionSpecialElements(elements, elementsSpecial);
-	const restsSorted: readonly T[] = sortRest(rests, options);
+	const restsSorted: readonly T[] = sort(rests, options);
 	return (restPlaceFirst ? [...restsSorted, ...specials] : [...specials, ...restsSorted]);
 }
 /**
@@ -68,7 +68,7 @@ function sortElementsBySelectorInternal<T>(elements: readonly T[], selector: Sor
 		specials,
 		rests
 	]: [specials: readonly T[], rests: readonly T[]] = partitionSpecialElements(elements, elementsSpecial);
-	const restsSelector: readonly (bigint | number | string)[] = sortRest(rests.map((element: T): bigint | number | string => {
+	const restsSelector: readonly (bigint | number | string)[] = sort(rests.map((element: T): bigint | number | string => {
 		return selector(element);
 	}), options);
 	const restsSorted: readonly T[] = [...rests].sort((a: T, b: T): number => {

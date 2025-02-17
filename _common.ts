@@ -59,15 +59,18 @@ function resolveSortOrder(input: SortOrder): SortOrder {
 	}
 	return result;
 }
-export function sortRest<T extends bigint | number | string>(elements: readonly T[], options: Pick<SortOptions, "restOrder" | "smartNumeric">): T[] {
+export function sort<T extends bigint | number | string>(elements: readonly T[], options: Pick<SortOptions, "restOrder" | "smartNumeric">): T[] {
 	const {
-		restOrder = "ascending",
+		restOrder: order = "ascending",
 		smartNumeric = false
 	}: Pick<SortOptions, "restOrder" | "smartNumeric"> = options;
-	const restOrderFmt: SortOrder = resolveSortOrder(restOrder);
+	const orderFmt: SortOrder = resolveSortOrder(order);
 	const result: T[] = [...elements];
-	if (restOrderFmt !== "keep") {
+	if (orderFmt !== "keep") {
 		result.sort((a: bigint | number | string, b: bigint | number | string): number => {
+			if (a === b) {
+				return 0;
+			}
 			if (typeof a === "bigint" && typeof b === "bigint") {
 				return compareNumerics(a, b);
 			}
@@ -112,9 +115,12 @@ export function sortRest<T extends bigint | number | string>(elements: readonly 
 				}
 				return 0;
 			}
+			if (String(a) === String(b)) {
+				return 0;
+			}
 			return (([a, b].sort()[0] === a) ? -1 : 1);
 		});
-		if (restOrderFmt === "descending") {
+		if (orderFmt === "descending") {
 			result.reverse();
 		}
 	}

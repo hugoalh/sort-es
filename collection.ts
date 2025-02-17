@@ -1,5 +1,5 @@
 import {
-	sortRest,
+	sort,
 	type SortOptions,
 	type SortOrder
 } from "./_common.ts";
@@ -33,7 +33,7 @@ function sortCollectionByKeysInternal<K extends bigint | number | string, V>(col
 		specials,
 		rests
 	]: [specials: Map<K, V>, rests: Map<K, V>] = partitionSpecialCollectionKeys(collection, keysSpecial);
-	const restsKeySorted: readonly K[] = sortRest(Array.from(rests.keys()), options);
+	const restsKeySorted: readonly K[] = sort(Array.from(rests.keys()), options);
 	const restsSorted: Map<K, V> = new Map<K, V>(Array.from(rests.entries()).sort(([aKey]: [K, V], [bKey]: [K, V]): number => {
 		return (restsKeySorted.indexOf(aKey) - restsKeySorted.indexOf(bKey));
 	}));
