@@ -55,19 +55,30 @@ An ES (JavaScript & TypeScript) module for enhanced sort operation.
 ## 🧩 APIs
 
 - ```ts
-  function sortCollectionByKeys<K extends bigint | number | string, V>(collection: Map<K, V>, options?: SortOptions & SortCollectionByKeysOptions<K>): Map<K, V>;
+  function sortCollectionByKeys<K extends SortableType, V>(collection: Map<K, V>, options?: SortOptions & SortCollectionByKeysOptions<K>): Map<K, V>;
   function sortCollectionByKeys<K extends string, V>(collection: Record<K, V>, options?: SortOptions & SortCollectionByKeysOptions<K>): Record<K, V>;
   ```
 - ```ts
-  function sortElements<T extends bigint | number | string>(elements: readonly T[], options?: SortOptions & SortElementsOptions<T>): T[];
-  function sortElements<T extends bigint | number | string>(elements: Set<T>, options?: SortOptions & SortElementsOptions<T>): Set<T>;
+  function sortCollectionByValues<K, V extends SortableType>(collection: Map<K, V>, options?: SortOptions & SortCollectionByKeysOptions<K>): Map<K, V>;
+  function sortCollectionByValues<K extends string, V extends SortableType>(collection: Record<K, V>, options?: SortOptions & SortCollectionByKeysOptions<K>): Record<K, V>;
+  ```
+- ```ts
+  function sortCollectionByValuesSelector<K, V>(collection: Map<K, V>, selector: SortElementsSelector<V>, options?: SortOptions & SortCollectionByKeysOptions<K>): Map<K, V>;
+  function sortCollectionByValuesSelector<K extends string, V>(collection: Record<K, V>, selector: SortElementsSelector<V>, options?: SortOptions & SortCollectionByKeysOptions<K>): Record<K, V>;
+  ```
+- ```ts
+  function sortElements<T extends SortableType>(elements: readonly T[], options?: SortOptions & SortElementsOptions<T>): T[];
+  function sortElements<T extends SortableType>(elements: Set<T>, options?: SortOptions & SortElementsOptions<T>): Set<T>;
   ```
 - ```ts
   function sortElementsBySelector<T>(elements: readonly T[], selector: SortElementsSelector<T>, options?: SortOptions & SortElementsOptions<T>): T[];
   function sortElementsBySelector<T>(elements: Set<T>, selector: SortElementsSelector<T>, options?: SortOptions & SortElementsOptions<T>): Set<T>;
   ```
 - ```ts
-  type SortElementsSelector<T> = (element: T) => bigint | number | string;
+  type SortableType = bigint | number | string;
+  ```
+- ```ts
+  type SortElementsSelector<T> = (element: T) => SortableType;
   ```
 
 > [!NOTE]

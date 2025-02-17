@@ -1,9 +1,13 @@
 import {
 	sort,
+	type SortableType,
+	type SortElementsSelector,
 	type SortOptions,
 	type SortOrder
 } from "./_common.ts";
 export type {
+	SortableType,
+	SortElementsSelector,
 	SortOptions,
 	SortOrder
 };
@@ -24,7 +28,7 @@ function partitionSpecialElements<T>(elements: readonly T[], elementsSpecial: re
 	});
 	return [specials, rests];
 }
-function sortElementsInternal<T extends bigint | number | string>(elements: readonly T[], options: SortOptions & SortElementsOptions<T>): T[] {
+function sortElementsInternal<T extends SortableType>(elements: readonly T[], options: SortOptions & SortElementsOptions<T>): T[] {
 	const {
 		elementsSpecial = [],
 		restPlaceFirst = false
@@ -38,27 +42,26 @@ function sortElementsInternal<T extends bigint | number | string>(elements: read
 }
 /**
  * Sort the elements.
- * @template {bigint | number | string} T
+ * @template {SortableType} T
  * @param {readonly T[]} elements Elements that need to sort.
  * @param {SortOptions & SortElementsOptions<T>} [options={}] Options.
  * @returns {T[]} A sorted elements.
  */
-export function sortElements<T extends bigint | number | string>(elements: readonly T[], options?: SortOptions & SortElementsOptions<T>): T[];
+export function sortElements<T extends SortableType>(elements: readonly T[], options?: SortOptions & SortElementsOptions<T>): T[];
 /**
  * Sort the elements.
- * @template {bigint | number | string} T
+ * @template {SortableType} T
  * @param {Set<T>} elements Elements that need to sort.
  * @param {SortOptions & SortElementsOptions<T>} [options={}] Options.
  * @returns {Set<T>} A sorted elements.
  */
-export function sortElements<T extends bigint | number | string>(elements: Set<T>, options?: SortOptions & SortElementsOptions<T>): Set<T>;
-export function sortElements<T extends bigint | number | string>(elements: readonly T[] | Set<T>, options: SortOptions & SortElementsOptions<T> = {}): T[] | Set<T> {
+export function sortElements<T extends SortableType>(elements: Set<T>, options?: SortOptions & SortElementsOptions<T>): Set<T>;
+export function sortElements<T extends SortableType>(elements: readonly T[] | Set<T>, options: SortOptions & SortElementsOptions<T> = {}): T[] | Set<T> {
 	if (elements instanceof Set) {
 		return new Set<T>(sortElementsInternal(Array.from(elements.values()), options));
 	}
 	return sortElementsInternal(elements, options);
 }
-export type SortElementsSelector<T> = (element: T) => bigint | number | string;
 function sortElementsBySelectorInternal<T>(elements: readonly T[], selector: SortElementsSelector<T>, options: SortOptions & SortElementsOptions<T>): T[] {
 	const {
 		elementsSpecial = [],
@@ -68,7 +71,7 @@ function sortElementsBySelectorInternal<T>(elements: readonly T[], selector: Sor
 		specials,
 		rests
 	]: [specials: readonly T[], rests: readonly T[]] = partitionSpecialElements(elements, elementsSpecial);
-	const restsSelector: readonly (bigint | number | string)[] = sort(rests.map((element: T): bigint | number | string => {
+	const restsSelector: readonly SortableType[] = sort(rests.map((element: T): SortableType => {
 		return selector(element);
 	}), options);
 	const restsSorted: readonly T[] = [...rests].sort((a: T, b: T): number => {

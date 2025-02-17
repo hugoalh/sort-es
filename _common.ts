@@ -1,3 +1,5 @@
+export type SortableType = bigint | number | string;
+export type SortElementsSelector<T> = (element: T) => SortableType;
 export type SortOrder =
 	| "ascending"
 	| "descending"
@@ -59,7 +61,7 @@ function resolveSortOrder(input: SortOrder): SortOrder {
 	}
 	return result;
 }
-export function sort<T extends bigint | number | string>(elements: readonly T[], options: Pick<SortOptions, "restOrder" | "smartNumeric">): T[] {
+export function sort<T extends SortableType>(elements: readonly T[], options: Pick<SortOptions, "restOrder" | "smartNumeric">): T[] {
 	const {
 		restOrder: order = "ascending",
 		smartNumeric = false
@@ -67,7 +69,7 @@ export function sort<T extends bigint | number | string>(elements: readonly T[],
 	const orderFmt: SortOrder = resolveSortOrder(order);
 	const result: T[] = [...elements];
 	if (orderFmt !== "keep") {
-		result.sort((a: bigint | number | string, b: bigint | number | string): number => {
+		result.sort((a: T, b: T): number => {
 			if (a === b) {
 				return 0;
 			}
