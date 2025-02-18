@@ -10,7 +10,7 @@ Deno.test("BigInts Normal 3", { permissions: "none" }, () => {
 	assertEquals(sortElements([3n, 1n, 2n, 4n, 5n]), [1n, 2n, 3n, 4n, 5n]);
 });
 Deno.test("BigInts Special 1", { permissions: "none" }, () => {
-	assertEquals(sortElements([1n, 2n, 3n, 4n, 5n], { elementsSpecial: [3n] }), [3n, 1n, 2n, 4n, 5n]);
+	assertEquals(sortElements([1n, 2n, 3n, 4n, 5n], { specialElements: [3n] }), [3n, 1n, 2n, 4n, 5n]);
 });
 Deno.test("Numbers Normal 1", { permissions: "none" }, () => {
 	assertEquals(sortElements([1, 2, 3, 4, 5]), [1, 2, 3, 4, 5]);
@@ -22,7 +22,7 @@ Deno.test("Numbers Normal 3", { permissions: "none" }, () => {
 	assertEquals(sortElements([3, 1, 2, 4, 5]), [1, 2, 3, 4, 5]);
 });
 Deno.test("Numbers Special 1", { permissions: "none" }, () => {
-	assertEquals(sortElements([1, 2, 3, 4, 5], { elementsSpecial: [3] }), [3, 1, 2, 4, 5]);
+	assertEquals(sortElements([1, 2, 3, 4, 5], { specialElements: [3] }), [3, 1, 2, 4, 5]);
 });
 Deno.test("Numerics Normal 1", { permissions: "none" }, () => {
 	assertEquals(sortElements([1n, 1.1, 1.2, 2n]), [1n, 1.1, 1.2, 2n]);

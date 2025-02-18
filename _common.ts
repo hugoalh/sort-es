@@ -1,4 +1,8 @@
-export type SortableType = bigint | number | string;
+export type SortableType =
+	| bigint
+	| number
+	| string
+	| Date;
 export type SortElementsSelector<T> = (element: T) => SortableType;
 export type SortOrder =
 	| "ascending"
@@ -28,10 +32,20 @@ export interface SortOptions {
 	 * @default {false}
 	 */
 	smartNumeric?: boolean;
+	/**
+	 * Which order the special elements should use to sort.
+	 * @default {"keep"}
+	 */
+	specialOrder?: SortOrder;
+}
+export interface PartitionResult<T> {
+	rests: T;
+	specials: T;
 }
 function compareNumerics(a: bigint, b: bigint): number;
 function compareNumerics(a: number, b: number): number;
-function compareNumerics(a: bigint | number, b: bigint | number): number {
+function compareNumerics(a: Date, b: Date): number;
+function compareNumerics(a: bigint | number | Date, b: bigint | number | Date): number {
 	if (a < b) {
 		return -1;
 	}
@@ -44,12 +58,12 @@ const regexpDigits = /\d+/g;
 function dissectStringNumeric(item: string): (bigint | string)[] {
 	const result: (bigint | string)[] = [];
 	let cursor: number = 0;
-	for (const element of item.matchAll(regexpDigits)) {
-		if (cursor < element.index) {
-			result.push(item.slice(cursor, element.index));
+	for (const match of item.matchAll(regexpDigits)) {
+		if (cursor < match.index) {
+			result.push(item.slice(cursor, match.index));
 		}
-		result.push(BigInt(element[0]));
-		cursor = element.index + element[0].length;
+		result.push(BigInt(match[0]));
+		cursor = match.index + match[0].length;
 	}
 	result.push(item.slice(cursor, item.length));
 	return result;
@@ -61,11 +75,14 @@ function resolveSortOrder(input: SortOrder): SortOrder {
 	}
 	return result;
 }
-export function sort<T extends SortableType>(elements: readonly T[], options: Pick<SortOptions, "restOrder" | "smartNumeric">): T[] {
+export interface SortOptionsInternal extends Pick<SortOptions, "smartNumeric"> {
+	order?: SortOrder;
+}
+export function sort<T extends SortableType>(elements: readonly T[], options: SortOptionsInternal): T[] {
 	const {
-		restOrder: order = "ascending",
+		order = "ascending",
 		smartNumeric = false
-	}: Pick<SortOptions, "restOrder" | "smartNumeric"> = options;
+	}: SortOptionsInternal = options;
 	const orderFmt: SortOrder = resolveSortOrder(order);
 	const result: T[] = [...elements];
 	if (orderFmt !== "keep") {
@@ -79,13 +96,18 @@ export function sort<T extends SortableType>(elements: readonly T[], options: Pi
 			if (typeof a === "number" && typeof b === "number") {
 				return compareNumerics(a, b);
 			}
+			if (a instanceof Date && b instanceof Date) {
+				return compareNumerics(a, b);
+			}
 			if (
 				(
 					typeof a === "bigint" ||
-					typeof a === "number"
+					typeof a === "number" ||
+					a instanceof Date
 				) && (
 					typeof b === "bigint" ||
-					typeof b === "number"
+					typeof b === "number" ||
+					b instanceof Date
 				)
 			) {
 				return compareNumerics(Number(a), Number(b));

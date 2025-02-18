@@ -8,7 +8,7 @@ export {
 	sortCollectionByKeys,
 	sortCollectionByValues,
 	sortCollectionByValuesSelector,
-	type SortCollectionByKeysOptions
+	type SortCollectionOptions
 } from "./collection.ts";
 export {
 	sortElements,

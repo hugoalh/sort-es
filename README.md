@@ -55,30 +55,27 @@ An ES (JavaScript & TypeScript) module for enhanced sort operation.
 ## 🧩 APIs
 
 - ```ts
-  function sortCollectionByKeys<K extends SortableType, V>(collection: Map<K, V>, options?: SortOptions & SortCollectionByKeysOptions<K>): Map<K, V>;
-  function sortCollectionByKeys<K extends string, V>(collection: Record<K, V>, options?: SortOptions & SortCollectionByKeysOptions<K>): Record<K, V>;
+  function sortCollectionByKeys<K extends SortableType, V>(collection: Map<K, V>, options?: SortCollectionOptions<K>): Map<K, V>;
+  function sortCollectionByKeys<K extends string, V>(collection: Record<K, V>, options?: SortCollectionOptions<K>): Record<K, V>;
   ```
 - ```ts
-  function sortCollectionByValues<K, V extends SortableType>(collection: Map<K, V>, options?: SortOptions & SortCollectionByKeysOptions<K>): Map<K, V>;
-  function sortCollectionByValues<K extends string, V extends SortableType>(collection: Record<K, V>, options?: SortOptions & SortCollectionByKeysOptions<K>): Record<K, V>;
+  function sortCollectionByValues<K, V extends SortableType>(collection: Map<K, V>, options?: SortCollectionOptions<K>): Map<K, V>;
+  function sortCollectionByValues<K extends string, V extends SortableType>(collection: Record<K, V>, options?: SortCollectionOptions<K>): Record<K, V>;
   ```
 - ```ts
-  function sortCollectionByValuesSelector<K, V>(collection: Map<K, V>, selector: SortElementsSelector<V>, options?: SortOptions & SortCollectionByKeysOptions<K>): Map<K, V>;
-  function sortCollectionByValuesSelector<K extends string, V>(collection: Record<K, V>, selector: SortElementsSelector<V>, options?: SortOptions & SortCollectionByKeysOptions<K>): Record<K, V>;
+  function sortCollectionByValuesSelector<K, V>(collection: Map<K, V>, selector: SortElementsSelector<V>, options?: SortCollectionOptions<K>): Map<K, V>;
+  function sortCollectionByValuesSelector<K extends string, V>(collection: Record<K, V>, selector: SortElementsSelector<V>, options?: SortCollectionOptions<K>): Record<K, V>;
   ```
 - ```ts
-  function sortElements<T extends SortableType>(elements: readonly T[], options?: SortOptions & SortElementsOptions<T>): T[];
-  function sortElements<T extends SortableType>(elements: Set<T>, options?: SortOptions & SortElementsOptions<T>): Set<T>;
+  function sortElements<T extends SortableType>(elements: readonly T[] | Iterable<T>, options?: SortElementsOptions<T>): T[];
+  function sortElements<T extends SortableType>(elements: Set<T>, options?: SortElementsOptions<T>): Set<T>;
   ```
 - ```ts
-  function sortElementsBySelector<T>(elements: readonly T[], selector: SortElementsSelector<T>, options?: SortOptions & SortElementsOptions<T>): T[];
-  function sortElementsBySelector<T>(elements: Set<T>, selector: SortElementsSelector<T>, options?: SortOptions & SortElementsOptions<T>): Set<T>;
+  function sortElementsBySelector<T>(elements: readonly T[] | Iterable<T>, selector: SortElementsSelector<T>, options?: SortElementsOptions<T>): T[];
+  function sortElementsBySelector<T>(elements: Set<T>, selector: SortElementsSelector<T>, options?: SortElementsOptions<T>): Set<T>;
   ```
 - ```ts
-  type SortableType = bigint | number | string;
-  ```
-- ```ts
-  type SortElementsSelector<T> = (element: T) => SortableType;
+  type SortableType = bigint | number | string | Date;
   ```
 
 > [!NOTE]
