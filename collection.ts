@@ -40,7 +40,13 @@ function partitionCollectionByKeys<K, V>(collection: Map<K, V>, specialKeys: rea
 		specials
 	};
 }
-function sortCollectionByKeysInternal<K extends SortableType, V>(collection: Map<K, V>, options: SortCollectionOptions<K>): Map<K, V> {
+const sortCollectionKeysSelector: SortElementsSelector<[unknown, unknown]> = ([key]: [unknown, unknown]): SortableType => {
+	return key as SortableType;
+};
+const sortCollectionValuesSelector: SortElementsSelector<[unknown, unknown]> = ([_key, value]: [unknown, unknown]): SortableType => {
+	return value as SortableType;
+};
+function sortCollectionInternal<K, V>(collection: Map<K, V>, options: SortCollectionOptions<K>, selector: SortElementsSelector<[K, V]>): Map<K, V> {
 	const {
 		restOrder = "ascending",
 		restPlaceFirst = false,
@@ -52,21 +58,22 @@ function sortCollectionByKeysInternal<K extends SortableType, V>(collection: Map
 		rests,
 		specials
 	}: PartitionResult<Map<K, V>> = partitionCollectionByKeys(collection, specialKeys);
-	const specialsKeySorted: readonly K[] = sort(Array.from(specials.keys()), {
+	const specialsSorted: readonly [K, V][] = sort(Array.from(specials.entries()), {
 		order: specialOrder,
+		selector,
 		smartNumeric
 	});
-	const specialsSorted: Map<K, V> = new Map<K, V>(Array.from(specials.entries()).sort(([aKey]: [K, V], [bKey]: [K, V]): number => {
-		return (specialsKeySorted.indexOf(aKey) - specialsKeySorted.indexOf(bKey));
-	}));
-	const restsKeySorted: readonly K[] = sort(Array.from(rests.keys()), {
+	const restsSorted: readonly [K, V][] = sort(Array.from(rests.entries()), {
 		order: restOrder,
+		selector,
 		smartNumeric
 	});
-	const restsSorted: Map<K, V> = new Map<K, V>(Array.from(rests.entries()).sort(([aKey]: [K, V], [bKey]: [K, V]): number => {
-		return (restsKeySorted.indexOf(aKey) - restsKeySorted.indexOf(bKey));
+	return new Map<K, V>(restPlaceFirst ? [...restsSorted, ...specialsSorted] : [...specialsSorted, ...restsSorted]);
+}
+function sortCollectionByValuesInternal<K, V>(collection: Map<K, V>, options: SortCollectionOptions<K>, selector?: SortElementsSelector<V>): Map<K, V> {
+	return sortCollectionInternal(collection, options, (typeof selector === "undefined") ? sortCollectionValuesSelector : (([_key, value]: [K, V]): SortableType => {
+		return selector(value);
 	}));
-	return new Map<K, V>(restPlaceFirst ? [...Array.from(restsSorted.entries()), ...Array.from(specialsSorted.entries())] : [...Array.from(specialsSorted.entries()), ...Array.from(restsSorted.entries())]);
 }
 /**
  * Sort the collection by keys.
@@ -88,37 +95,9 @@ export function sortCollectionByKeys<K extends SortableType, V>(collection: Map<
 export function sortCollectionByKeys<K extends string, V>(collection: Record<K, V>, options?: SortCollectionOptions<K>): Record<K, V>;
 export function sortCollectionByKeys<KM extends SortableType, KR extends string, V>(collection: Map<KM, V> | Record<KR, V>, options: (SortCollectionOptions<KM> | SortCollectionOptions<KR>) = {}): Map<KM, V> | Record<KR, V> {
 	if (collection instanceof Map) {
-		return sortCollectionByKeysInternal(collection, options as SortCollectionOptions<KM>);
+		return sortCollectionInternal(collection, options as SortCollectionOptions<KM>, sortCollectionKeysSelector);
 	}
-	return Object.fromEntries(sortCollectionByKeysInternal(new Map<KR, V>(Object.entries(collection) as [KR, V][]), options as SortCollectionOptions<KR>)) as Record<KR, V>;
-}
-function sortCollectionByValuesInternal<K, V extends SortableType>(collection: Map<K, V>, options: SortCollectionOptions<K>): Map<K, V> {
-	const {
-		restOrder = "ascending",
-		restPlaceFirst = false,
-		smartNumeric = false,
-		specialKeys,
-		specialOrder = "keep"
-	}: SortCollectionOptions<K> = options;
-	const {
-		rests,
-		specials
-	}: PartitionResult<Map<K, V>> = partitionCollectionByKeys(collection, specialKeys);
-	const specialsValueSorted: readonly V[] = sort(Array.from(specials.values()), {
-		order: specialOrder,
-		smartNumeric
-	});
-	const specialsSorted: Map<K, V> = new Map<K, V>(Array.from(specials.entries()).sort(([_aKey, aValue]: [K, V], [_bKey, bValue]: [K, V]): number => {
-		return (specialsValueSorted.indexOf(aValue) - specialsValueSorted.indexOf(bValue));
-	}));
-	const restsValueSorted: readonly V[] = sort(Array.from(rests.values()), {
-		order: restOrder,
-		smartNumeric
-	});
-	const restsSorted: Map<K, V> = new Map<K, V>(Array.from(rests.entries()).sort(([_aKey, aValue]: [K, V], [_bKey, bValue]: [K, V]): number => {
-		return (restsValueSorted.indexOf(aValue) - restsValueSorted.indexOf(bValue));
-	}));
-	return new Map<K, V>(restPlaceFirst ? [...Array.from(restsSorted.entries()), ...Array.from(specialsSorted.entries())] : [...Array.from(specialsSorted.entries()), ...Array.from(restsSorted.entries())]);
+	return Object.fromEntries(sortCollectionInternal(new Map<KR, V>(Object.entries(collection) as [KR, V][]), options as SortCollectionOptions<KR>, sortCollectionKeysSelector)) as Record<KR, V>;
 }
 /**
  * Sort the collection by values.
@@ -144,38 +123,6 @@ export function sortCollectionByValues<KM, KR extends string, V extends Sortable
 	}
 	return Object.fromEntries(sortCollectionByValuesInternal(new Map<KR, V>(Object.entries(collection) as [KR, V][]), options as SortCollectionOptions<KR>)) as Record<KR, V>;
 }
-function sortCollectionByValuesSelectorInternal<K, V>(collection: Map<K, V>, selector: SortElementsSelector<V>, options: SortCollectionOptions<K>): Map<K, V> {
-	const {
-		restOrder = "ascending",
-		restPlaceFirst = false,
-		smartNumeric = false,
-		specialKeys,
-		specialOrder = "keep"
-	}: SortCollectionOptions<K> = options;
-	const {
-		rests,
-		specials
-	}: PartitionResult<Map<K, V>> = partitionCollectionByKeys(collection, specialKeys);
-	const specialsValueSelectorSorted: readonly SortableType[] = sort(Array.from(specials.values(), (element: V): SortableType => {
-		return selector(element);
-	}), {
-		order: specialOrder,
-		smartNumeric
-	});
-	const specialsSorted: Map<K, V> = new Map<K, V>(Array.from(specials.entries()).sort(([_aKey, aValue]: [K, V], [_bKey, bValue]: [K, V]): number => {
-		return (specialsValueSelectorSorted.indexOf(selector(aValue)) - specialsValueSelectorSorted.indexOf(selector(bValue)));
-	}));
-	const restsValueSorted: readonly SortableType[] = sort(Array.from(rests.values(), (element: V): SortableType => {
-		return selector(element);
-	}), {
-		order: restOrder,
-		smartNumeric
-	});
-	const restsSorted: Map<K, V> = new Map<K, V>(Array.from(rests.entries()).sort(([_aKey, aValue]: [K, V], [_bKey, bValue]: [K, V]): number => {
-		return (restsValueSorted.indexOf(selector(aValue)) - restsValueSorted.indexOf(selector(bValue)));
-	}));
-	return new Map<K, V>(restPlaceFirst ? [...Array.from(restsSorted.entries()), ...Array.from(specialsSorted.entries())] : [...Array.from(specialsSorted.entries()), ...Array.from(restsSorted.entries())]);
-}
 /**
  * Sort the collection by values selector.
  * @template {unknown} K
@@ -198,7 +145,7 @@ export function sortCollectionByValuesSelector<K, V>(collection: Map<K, V>, sele
 export function sortCollectionByValuesSelector<K extends string, V>(collection: Record<K, V>, selector: SortElementsSelector<V>, options?: SortCollectionOptions<K>): Record<K, V>;
 export function sortCollectionByValuesSelector<KM, KR extends string, V>(collection: Map<KM, V> | Record<KR, V>, selector: SortElementsSelector<V>, options: (SortCollectionOptions<KM> | SortCollectionOptions<KR>) = {}): Map<KM, V> | Record<KR, V> {
 	if (collection instanceof Map) {
-		return sortCollectionByValuesSelectorInternal(collection, selector, options as SortCollectionOptions<KM>);
+		return sortCollectionByValuesInternal(collection, options as SortCollectionOptions<KM>, selector);
 	}
-	return Object.fromEntries(sortCollectionByValuesSelectorInternal(new Map<KR, V>(Object.entries(collection) as [KR, V][]), selector, options as SortCollectionOptions<KR>)) as Record<KR, V>;
+	return Object.fromEntries(sortCollectionByValuesInternal(new Map<KR, V>(Object.entries(collection) as [KR, V][]), options as SortCollectionOptions<KR>, selector)) as Record<KR, V>;
 }

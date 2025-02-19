@@ -38,7 +38,7 @@ function partitionElements<T>(elements: readonly T[], specialElements: readonly 
 		specials
 	};
 }
-function sortElementsInternal<T extends SortableType>(elements: readonly T[], options: SortElementsOptions<T>): T[] {
+function sortElementsInternal<T>(elements: readonly T[], options: SortElementsOptions<T>, selector?: SortElementsSelector<T>): T[] {
 	const {
 		restOrder = "ascending",
 		restPlaceFirst = false,
@@ -52,10 +52,12 @@ function sortElementsInternal<T extends SortableType>(elements: readonly T[], op
 	}: PartitionResult<readonly T[]> = partitionElements(elements, specialElements);
 	const specialsSorted: readonly T[] = sort(specials, {
 		order: specialOrder,
+		selector,
 		smartNumeric
 	});
 	const restsSorted: readonly T[] = sort(rests, {
 		order: restOrder,
+		selector,
 		smartNumeric
 	});
 	return (restPlaceFirst ? [...restsSorted, ...specialsSorted] : [...specialsSorted, ...restsSorted]);
@@ -85,38 +87,6 @@ export function sortElements<T extends SortableType>(elements: readonly T[] | It
 	}
 	return sortElementsInternal(Array.from(elements), options);
 }
-function sortElementsBySelectorInternal<T>(elements: readonly T[], selector: SortElementsSelector<T>, options: SortElementsOptions<T>): T[] {
-	const {
-		restOrder = "ascending",
-		restPlaceFirst = false,
-		smartNumeric = false,
-		specialElements,
-		specialOrder = "keep"
-	}: SortElementsOptions<T> = options;
-	const {
-		rests,
-		specials
-	}: PartitionResult<readonly T[]> = partitionElements(elements, specialElements);
-	const specialsSelectorSorted: readonly SortableType[] = sort(specials.map((element: T): SortableType => {
-		return selector(element);
-	}), {
-		order: specialOrder,
-		smartNumeric
-	});
-	const specialsSorted: readonly T[] = [...specials].sort((a: T, b: T): number => {
-		return (specialsSelectorSorted.indexOf(selector(a)) - specialsSelectorSorted.indexOf(selector(b)));
-	});
-	const restsSelectorSorted: readonly SortableType[] = sort(rests.map((element: T): SortableType => {
-		return selector(element);
-	}), {
-		order: restOrder,
-		smartNumeric
-	});
-	const restsSorted: readonly T[] = [...rests].sort((a: T, b: T): number => {
-		return (restsSelectorSorted.indexOf(selector(a)) - restsSelectorSorted.indexOf(selector(b)));
-	});
-	return (restPlaceFirst ? [...restsSorted, ...specialsSorted] : [...specialsSorted, ...restsSorted]);
-}
 /**
  * Sort the elements by selector.
  * @template {unknown} T
@@ -137,10 +107,10 @@ export function sortElementsBySelector<T>(elements: readonly T[] | Iterable<T>, 
 export function sortElementsBySelector<T>(elements: Set<T>, selector: SortElementsSelector<T>, options?: SortElementsOptions<T>): Set<T>;
 export function sortElementsBySelector<T>(elements: readonly T[] | Iterable<T> | Set<T>, selector: SortElementsSelector<T>, options: SortElementsOptions<T> = {}): T[] | Set<T> {
 	if (Array.isArray(elements)) {
-		return sortElementsBySelectorInternal(elements, selector, options);
+		return sortElementsInternal(elements, options, selector);
 	}
 	if (elements instanceof Set) {
-		return new Set<T>(sortElementsBySelectorInternal(Array.from(elements.values()), selector, options));
+		return new Set<T>(sortElementsInternal(Array.from(elements.values()), options, selector));
 	}
-	return sortElementsBySelectorInternal(Array.from(elements), selector, options);
+	return sortElementsInternal(Array.from(elements), options, selector);
 }
