@@ -80,7 +80,7 @@ export interface SortOptionsInternal<T> extends Pick<SortOptions, "smartNumeric"
 	selector?: SortElementsSelector<T>;
 }
 interface SortElementRemap<T> {
-	origin: T;
+	original: T;
 	select: unknown;
 }
 export function sort<T>(elements: readonly T[], options: SortOptionsInternal<T>): T[] {
@@ -95,11 +95,10 @@ export function sort<T>(elements: readonly T[], options: SortOptionsInternal<T>)
 	}
 	const result: SortElementRemap<T>[] = elements.map((element: T): SortElementRemap<T> => {
 		return {
-			origin: element,
+			original: element,
 			select: (typeof selector === "function") ? selector(element) : element
 		};
-	});
-	result.sort(({ select: a }: SortElementRemap<T>, { select: b }: SortElementRemap<T>): number => {
+	}).sort(({ select: a }: SortElementRemap<T>, { select: b }: SortElementRemap<T>): number => {
 		if (a === b) {
 			return 0;
 		}
@@ -160,7 +159,7 @@ export function sort<T>(elements: readonly T[], options: SortOptionsInternal<T>)
 	if (orderFmt === "descending") {
 		result.reverse();
 	}
-	return result.map(({ origin }: SortElementRemap<T>): T => {
-		return origin;
+	return result.map(({ original }: SortElementRemap<T>): T => {
+		return original;
 	});
 }
