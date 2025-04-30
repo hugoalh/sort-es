@@ -1,4 +1,4 @@
-import { assertEquals } from "STD/assert/equals";
+import { deepStrictEqual } from "node:assert";
 import {
 	sortCollectionByKeys,
 	sortCollectionByValues
@@ -11,22 +11,22 @@ const sample1 = {
 };
 Deno.test("1 Key Normal", { permissions: "none" }, () => {
 	const result = Object.keys(sortCollectionByKeys(sample1));
-	assertEquals(result, ["a", "b", "c", "d"]);
+	deepStrictEqual(result, ["a", "b", "c", "d"]);
 });
 Deno.test("1 Key Special", { permissions: "none" }, () => {
 	const result = Object.keys(sortCollectionByKeys(sample1, {
 		specialKeys: ["c"]
 	}));
-	assertEquals(result, ["c", "a", "b", "d"]);
+	deepStrictEqual(result, ["c", "a", "b", "d"]);
 });
 Deno.test("1 Key RestFirst Special", { permissions: "none" }, () => {
 	const result = Object.keys(sortCollectionByKeys(sample1, {
 		specialKeys: ["c"],
 		restPlaceFirst: true
 	}));
-	assertEquals(result, ["a", "b", "d", "c"]);
+	deepStrictEqual(result, ["a", "b", "d", "c"]);
 });
 Deno.test("1 Value", { permissions: "none" }, () => {
 	const result = Object.values(sortCollectionByValues(sample1));
-	assertEquals(result, ["0bd85eab08e1", "a5e0a18f58f2", "abdc6b784c27", "abee7ff65308"]);
+	deepStrictEqual(result, ["0bd85eab08e1", "a5e0a18f58f2", "abdc6b784c27", "abee7ff65308"]);
 });
