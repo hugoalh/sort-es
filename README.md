@@ -6,7 +6,7 @@
 [![JSR: @hugoalh/sort](https://img.shields.io/jsr/v/@hugoalh/sort?label=@hugoalh/sort&labelColor=F7DF1E&logo=jsr&logoColor=000000&style=flat "JSR: @hugoalh/sort")](https://jsr.io/@hugoalh/sort)
 [![NPM: @hugoalh/sort](https://img.shields.io/npm/v/@hugoalh/sort?label=@hugoalh/sort&labelColor=CB3837&logo=npm&logoColor=ffffff&style=flat "NPM: @hugoalh/sort")](https://www.npmjs.com/package/@hugoalh/sort)
 
-An ES (JavaScript & TypeScript) module for enhanced sort operation.
+An ECMAScript (JavaScript & TypeScript) module for enhanced sort operation.
 
 ## 🔰 Begin
 
