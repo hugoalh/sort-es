@@ -1,17 +1,17 @@
 export type {
 	SortableType,
-	SortElementsSelector,
 	SortOptions,
 	SortOrder
 } from "./_common.ts";
 export {
+	sortCollection,
 	sortCollectionByKeys,
 	sortCollectionByValues,
-	sortCollectionByValuesSelector,
-	type SortCollectionOptions
+	type SortCollectionOptions,
+	type SortCollectionSelector
 } from "./collection.ts";
 export {
 	sortElements,
-	sortElementsBySelector,
-	type SortElementsOptions
+	type SortElementsOptions,
+	type SortElementsSelector
 } from "./elements.ts";

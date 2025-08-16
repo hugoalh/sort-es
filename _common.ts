@@ -3,19 +3,15 @@ export type SortableType =
 	| number
 	| string
 	| Date;
-export type SortElementsSelector<T> = (element: T) => SortableType;
 export type SortOrder =
 	| "ascending"
 	| "descending"
 	| "keep";
-const sortOrders: Readonly<Record<string, SortOrder>> = {
-	a: "ascending",
-	ascending: "ascending",
-	d: "descending",
-	descending: "descending",
-	k: "keep",
-	keep: "keep"
-};
+const sortOrders: readonly SortOrder[] = [
+	"ascending",
+	"descending",
+	"keep"
+];
 export interface SortOptions {
 	/**
 	 * Which order the rest elements should use to sort.
@@ -29,7 +25,7 @@ export interface SortOptions {
 	restPlaceFirst?: boolean;
 	/**
 	 * Whether to correctly handle numerics for the element with type of string, sort by mathematics instead of ASCII code.
-	 * @default {false}
+	 * @default {true}
 	 */
 	smartNumeric?: boolean;
 	/**
@@ -54,51 +50,40 @@ function compareNumerics(a: bigint | number | Date, b: bigint | number | Date): 
 	}
 	return 0;
 }
-const regexpDigits = /\d+/g;
 function dissectStringNumeric(item: string): (bigint | string)[] {
 	const result: (bigint | string)[] = [];
-	let cursor: number = 0;
-	for (const match of item.matchAll(regexpDigits)) {
-		if (cursor < match.index) {
-			result.push(item.slice(cursor, match.index));
+	let index: number = 0;
+	for (const match of item.matchAll(/\d+/g)) {
+		if (index < match.index) {
+			result.push(item.slice(index, match.index));
 		}
 		result.push(BigInt(match[0]));
-		cursor = match.index + match[0].length;
+		index = match.index + match[0].length;
 	}
-	result.push(item.slice(cursor, item.length));
+	result.push(item.slice(index, item.length));
 	return result;
 }
-function resolveSortOrder(input: SortOrder): SortOrder {
-	const result: SortOrder | undefined = sortOrders[input];
-	if (typeof result === "undefined") {
-		throw new RangeError(`\`${input}\` is not a valid sort order! Only accept these values: ${Object.keys(sortOrders).sort().join(", ")}`);
-	}
-	return result;
-}
-export interface SortOptionsInternal<T> extends Pick<SortOptions, "smartNumeric"> {
-	order?: SortOrder;
-	selector?: SortElementsSelector<T>;
-}
-interface SortElementRemap<T> {
+export interface SorterContext<T> {
 	original: T;
-	select: unknown;
+	select: SortableType;
 }
-export function sort<T>(elements: readonly T[], options: SortOptionsInternal<T>): T[] {
+export interface SorterOptions extends Pick<SortOptions, "smartNumeric"> {
+	order?: SortOrder;
+}
+export function sorter<T>(contexts: readonly SorterContext<T>[], options: SorterOptions = {}): T[] {
 	const {
 		order = "ascending",
-		selector,
-		smartNumeric = false
-	}: SortOptionsInternal<T> = options;
-	const orderFmt: SortOrder = resolveSortOrder(order);
-	if (orderFmt === "keep") {
-		return [...elements];
+		smartNumeric = true
+	}: SorterOptions = options;
+	if (!sortOrders.includes(order)) {
+		throw new RangeError(`\`${order}\` is not a valid sort order! Only accept these values: ${sortOrders.join(", ")}`);
 	}
-	const result: SortElementRemap<T>[] = elements.map((element: T): SortElementRemap<T> => {
-		return {
-			original: element,
-			select: (typeof selector === "function") ? selector(element) : element
-		};
-	}).sort(({ select: a }: SortElementRemap<T>, { select: b }: SortElementRemap<T>): number => {
+	if (order === "keep") {
+		return contexts.map(({ original }: SorterContext<T>): T => {
+			return original;
+		});
+	}
+	const result: T[] = contexts.toSorted(({ select: a }: SorterContext<T>, { select: b }: SorterContext<T>): number => {
 		if (a === b) {
 			return 0;
 		}
@@ -155,11 +140,8 @@ export function sort<T>(elements: readonly T[], options: SortOptionsInternal<T>)
 			return 0;
 		}
 		return (([a, b].sort()[0] === a) ? -1 : 1);
-	});
-	if (orderFmt === "descending") {
-		result.reverse();
-	}
-	return result.map(({ original }: SortElementRemap<T>): T => {
+	}).map(({ original }: SorterContext<T>): T => {
 		return original;
 	});
+	return ((order === "descending") ? result.reverse() : result);
 }

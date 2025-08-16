@@ -15,13 +15,13 @@ Deno.test("1 Key Normal", { permissions: "none" }, () => {
 });
 Deno.test("1 Key Special", { permissions: "none" }, () => {
 	const result = Object.keys(sortCollectionByKeys(sample1, {
-		specialKeys: ["c"]
+		specialEntriesKey: ["c"]
 	}));
 	deepStrictEqual(result, ["c", "a", "b", "d"]);
 });
 Deno.test("1 Key RestFirst Special", { permissions: "none" }, () => {
 	const result = Object.keys(sortCollectionByKeys(sample1, {
-		specialKeys: ["c"],
+		specialEntriesKey: ["c"],
 		restPlaceFirst: true
 	}));
 	deepStrictEqual(result, ["a", "b", "d", "c"]);

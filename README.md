@@ -54,6 +54,10 @@ An ECMAScript (JavaScript & TypeScript) module for enhanced sort operation.
 ## 🧩 APIs
 
 - ```ts
+  function sortCollection<K, V>(collection: Map<K, V>, selector: SortCollectionSelector<K, V>, options?: SortCollectionOptions<K>): Map<K, V>;
+  function sortCollection<K extends string, V>(collection: Record<K, V>, selector: SortCollectionSelector<K, V>, options?: SortCollectionOptions<K>): Record<K, V>;
+  ```
+- ```ts
   function sortCollectionByKeys<K extends SortableType, V>(collection: Map<K, V>, options?: SortCollectionOptions<K>): Map<K, V>;
   function sortCollectionByKeys<K extends string, V>(collection: Record<K, V>, options?: SortCollectionOptions<K>): Record<K, V>;
   ```
@@ -62,19 +66,17 @@ An ECMAScript (JavaScript & TypeScript) module for enhanced sort operation.
   function sortCollectionByValues<K extends string, V extends SortableType>(collection: Record<K, V>, options?: SortCollectionOptions<K>): Record<K, V>;
   ```
 - ```ts
-  function sortCollectionByValuesSelector<K, V>(collection: Map<K, V>, selector: SortElementsSelector<V>, options?: SortCollectionOptions<K>): Map<K, V>;
-  function sortCollectionByValuesSelector<K extends string, V>(collection: Record<K, V>, selector: SortElementsSelector<V>, options?: SortCollectionOptions<K>): Record<K, V>;
-  ```
-- ```ts
   function sortElements<T extends SortableType>(elements: readonly T[] | Iterable<T>, options?: SortElementsOptions<T>): T[];
   function sortElements<T extends SortableType>(elements: Set<T>, options?: SortElementsOptions<T>): Set<T>;
+  function sortElements<T>(elements: readonly T[] | Iterable<T>, selector: SortElementsSelector<T>, options?: SortElementsOptions<T>): T[];
+  function sortElements<T>(elements: Set<T>, selector: SortElementsSelector<T>, options?: SortElementsOptions<T>): Set<T>;
   ```
 - ```ts
-  function sortElementsBySelector<T>(elements: readonly T[] | Iterable<T>, selector: SortElementsSelector<T>, options?: SortElementsOptions<T>): T[];
-  function sortElementsBySelector<T>(elements: Set<T>, selector: SortElementsSelector<T>, options?: SortElementsOptions<T>): Set<T>;
-  ```
-- ```ts
-  type SortableType = bigint | number | string | Date;
+  type SortableType =
+    | bigint
+    | number
+    | string
+    | Date;
   ```
 
 > [!NOTE]
@@ -89,6 +91,6 @@ An ECMAScript (JavaScript & TypeScript) module for enhanced sort operation.
   //=> [0, 1n, 1.1, 1.2]
   ```
 - ```ts
-  sortElements(["sample10.png", "sample3.png", "sample2.png", "sample5.png", "sample4.png"], { smartNumeric: true });
+  sortElements(["sample10.png", "sample3.png", "sample2.png", "sample5.png", "sample4.png"]);
   //=> ["sample2.png", "sample3.png", "sample4.png", "sample5.png", "sample10.png"]
   ```
