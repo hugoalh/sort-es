@@ -101,7 +101,8 @@ export function sortCollection<K, V>(collection: Map<K, V>, selector: SortCollec
  * @returns {Record<K, V>} A sorted collection.
  */
 export function sortCollection<K extends string, V>(collection: Record<K, V>, selector: SortCollectionSelector<K, V>, options?: SortCollectionOptions<K>): Record<K, V>;
-export function sortCollection<K, V>(collection: Map<K, V> | Record<string, V>, selector: SortCollectionSelector<K, V>, options: SortCollectionOptions<K> = {}): Map<K, V> | Record<string, V> {
+//@ts-ignore Overload.
+export function sortCollection<K, V>(collection: Map<K, V> | Record<K, V>, selector: SortCollectionSelector<K, V>, options: SortCollectionOptions<K> = {}): Map<K, V> | Record<K, V> {
 	if (collection instanceof Map) {
 		return sortCollectionInternal(collection, selector, options);
 	}
@@ -125,7 +126,8 @@ export function sortCollectionByKeys<K extends SortableType, V>(collection: Map<
  * @returns {Record<K, V>} A sorted collection.
  */
 export function sortCollectionByKeys<K extends string, V>(collection: Record<K, V>, options?: SortCollectionOptions<K>): Record<K, V>;
-export function sortCollectionByKeys<K, V>(collection: Map<K, V> | Record<string, V>, options: SortCollectionOptions<K> = {}): Map<K, V> | Record<string, V> {
+//@ts-ignore Overload.
+export function sortCollectionByKeys<K, V>(collection: Map<K, V> | Record<K, V>, options: SortCollectionOptions<K> = {}): Map<K, V> | Record<K, V> {
 	if (collection instanceof Map) {
 		return sortCollectionInternal(collection, sortCollectionKeySelectorDefault, options);
 	}
@@ -149,7 +151,8 @@ export function sortCollectionByValues<K, V extends SortableType>(collection: Ma
  * @returns {Record<K, V>} A sorted collection.
  */
 export function sortCollectionByValues<K extends string, V extends SortableType>(collection: Record<K, V>, options?: SortCollectionOptions<K>): Record<K, V>;
-export function sortCollectionByValues<K, V extends SortableType>(collection: Map<K, V> | Record<string, V>, options: SortCollectionOptions<K> = {}): Map<K, V> | Record<string, V> {
+//@ts-ignore Overload.
+export function sortCollectionByValues<K, V extends SortableType>(collection: Map<K, V> | Record<K, V>, options: SortCollectionOptions<K> = {}): Map<K, V> | Record<K, V> {
 	if (collection instanceof Map) {
 		return sortCollectionInternal(collection, sortCollectionValueSelectorDefault, options);
 	}
