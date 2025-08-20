@@ -13,6 +13,7 @@ export type {
 export interface SortCollectionOptions<K> extends SortOptions {
 	/**
 	 * Select entries key as special entries.
+	 * @default {[]}
 	 */
 	specialEntriesKey?: readonly K[] | ((key: K) => boolean);
 }
