@@ -2,6 +2,7 @@
 	"$schema": "https://raw.githubusercontent.com/denoland/deno/main/cli/schemas/config-file.v1.json",
 	"name": "@hugoalh/sort",
 	"version": "0.3.0",
+	"license": "MIT",
 	"exports": {
 		"./collection": "./collection.ts",
 		"./elements": "./elements.ts",

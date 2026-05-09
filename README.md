@@ -4,8 +4,8 @@
 
 🔗
 [GitHub](https://github.com/hugoalh/sort-es)
-[JSR](https://jsr.io/@hugoalh/sort)
-[NPM](https://www.npmjs.com/package/@hugoalh/sort)
+● [JSR](https://jsr.io/@hugoalh/sort)
+● [NPM](https://www.npmjs.com/package/@hugoalh/sort)
 
 An ECMAScript module for enhanced sort operation.
 
