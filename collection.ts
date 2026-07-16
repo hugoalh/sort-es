@@ -4,10 +4,7 @@ import {
 	type SortOptions
 } from "./_common.ts";
 import type { ComparableType } from "./compare.ts";
-export type {
-	SortOptions,
-	SortOrder
-} from "./_common.ts";
+export type { SortOptions } from "./_common.ts";
 export type { ComparableType } from "./compare.ts";
 export type SortCollectionSelector<K, V> = (key: K, value: V) => ComparableType;
 const sortCollectionKeySelectorDefault: SortCollectionSelector<ComparableType, unknown> = (key: ComparableType, _value: unknown): ComparableType => {

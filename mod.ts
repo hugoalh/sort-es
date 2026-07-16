@@ -1,7 +1,4 @@
-export type {
-	SortOptions,
-	SortOrder
-} from "./_common.ts";
+export type { SortOptions } from "./_common.ts";
 export {
 	sortCollection,
 	sortCollectionByKeys,
