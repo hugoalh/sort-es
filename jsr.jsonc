@@ -1,10 +1,11 @@
 {
 	"$schema": "https://raw.githubusercontent.com/denoland/deno/main/cli/schemas/config-file.v1.json",
 	"name": "@hugoalh/sort",
-	"version": "0.3.0",
+	"version": "0.4.0",
 	"license": "MIT",
 	"exports": {
 		"./collection": "./collection.ts",
+		"./compare": "./compare.ts",
 		"./elements": "./elements.ts",
 		".": "./mod.ts"
 	},

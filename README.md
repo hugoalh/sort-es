@@ -39,6 +39,9 @@ This does not request any runtime permission.
 | **Name** | **Path** | **Description** |
 |:--|:--|:--|
 | `.` | `./mod.ts` | Default. |
+| `./collection` | `./collection.ts` | Sort collection. |
+| `./compare` | `./compare.ts` | Compare. |
+| `./elements` | `./elements.ts` | Sort elements. |
 
 > [!NOTE]
 > - Different runtimes have vary support for the sources and entrypoints, visit the runtime documentation for more information.
@@ -51,25 +54,42 @@ This does not request any runtime permission.
 ## 🧩 APIs
 
 - ```ts
-  function sortCollection<K, V>(collection: Map<K, V>, selector: SortCollectionSelector<K, V>, options?: SortCollectionOptions<K>): Map<K, V>;
-  function sortCollection<K extends string, V>(collection: Record<K, V>, selector: SortCollectionSelector<K, V>, options?: SortCollectionOptions<K>): Record<K, V>;
+  class Comparer {
+    constructor(options?: ComparerOptions);
+    compareAscending(a: ComparableType, b: ComparableType): number;
+    compareDescending(a: ComparableType, b: ComparableType): number;
+  }
   ```
 - ```ts
-  function sortCollectionByKeys<K extends SortableType, V>(collection: Map<K, V>, options?: SortCollectionOptions<K>): Map<K, V>;
-  function sortCollectionByKeys<K extends string, V>(collection: Record<K, V>, options?: SortCollectionOptions<K>): Record<K, V>;
+  function compareNumericsAscending(a: bigint, b: bigint): number;
+  function compareNumericsAscending(a: number, b: number): number;
+  function compareNumericsAscending(a: Date, b: Date): number;
   ```
 - ```ts
-  function sortCollectionByValues<K, V extends SortableType>(collection: Map<K, V>, options?: SortCollectionOptions<K>): Map<K, V>;
-  function sortCollectionByValues<K extends string, V extends SortableType>(collection: Record<K, V>, options?: SortCollectionOptions<K>): Record<K, V>;
+  function compareNumericsDescending(a: bigint, b: bigint): number;
+  function compareNumericsDescending(a: number, b: number): number;
+  function compareNumericsDescending(a: Date, b: Date): number;
   ```
 - ```ts
-  function sortElements<T extends SortableType>(elements: readonly T[] | Iterable<T>, options?: SortElementsOptions<T>): T[];
-  function sortElements<T extends SortableType>(elements: Set<T>, options?: SortElementsOptions<T>): Set<T>;
-  function sortElements<T>(elements: readonly T[] | Iterable<T>, selector: SortElementsSelector<T>, options?: SortElementsOptions<T>): T[];
-  function sortElements<T>(elements: Set<T>, selector: SortElementsSelector<T>, options?: SortElementsOptions<T>): Set<T>;
+  function sortCollection<K, V>(collection: Map<K, V>, selector: SortCollectionSelector<K, V>, options?: SortOptions): Map<K, V>;
+  function sortCollection<K extends string, V>(collection: Record<K, V>, selector: SortCollectionSelector<K, V>, options?: SortOptions): Record<K, V>;
   ```
 - ```ts
-  type SortableType =
+  function sortCollectionByKeys<K extends ComparableType, V>(collection: Map<K, V>, options?: SortOptions): Map<K, V>;
+  function sortCollectionByKeys<K extends string, V>(collection: Record<K, V>, options?: SortOptions): Record<K, V>;
+  ```
+- ```ts
+  function sortCollectionByValues<K, V extends ComparableType>(collection: Map<K, V>, options?: SortOptions): Map<K, V>;
+  function sortCollectionByValues<K extends string, V extends ComparableType>(collection: Record<K, V>, options?: SortOptions): Record<K, V>;
+  ```
+- ```ts
+  function sortElements<T extends ComparableType>(elements: readonly T[] | Iterable<T>, options?: SortOptions): T[];
+  function sortElements<T extends ComparableType>(elements: Set<T>, options?: SortOptions): Set<T>;
+  function sortElements<T>(elements: readonly T[] | Iterable<T>, selector: SortElementsSelector<T>, options?: SortOptions): T[];
+  function sortElements<T>(elements: Set<T>, selector: SortElementsSelector<T>, options?: SortOptions): Set<T>;
+  ```
+- ```ts
+  type ComparableType =
     | bigint
     | number
     | string
