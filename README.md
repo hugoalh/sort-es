@@ -3,7 +3,8 @@
 [**⚖️** MIT](./LICENSE.md)
 
 🔗
-[GitHub](https://github.com/hugoalh/sort-es)
+[DistBoard @hugoalh](https://hugoalh.github.io/distboard/sort_ecmascript)
+● [GitHub](https://github.com/hugoalh/sort-es)
 ● [JSR](https://jsr.io/@hugoalh/sort)
 ● [NPM](https://www.npmjs.com/package/@hugoalh/sort)
 
