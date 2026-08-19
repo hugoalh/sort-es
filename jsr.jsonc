@@ -4,10 +4,10 @@
 	"version": "0.4.0",
 	"license": "MIT",
 	"exports": {
+		".": "./mod.ts",
 		"./collection": "./collection.ts",
 		"./compare": "./compare.ts",
-		"./elements": "./elements.ts",
-		".": "./mod.ts"
+		"./elements": "./elements.ts"
 	},
 	"imports": {
 	},
