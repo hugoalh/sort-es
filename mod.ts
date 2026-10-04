@@ -7,6 +7,12 @@ export {
 } from "./collection.ts";
 export {
 	Comparer,
+	compareBigIntsAscending,
+	compareBigIntsDescending,
+	compareDatesAscending,
+	compareDatesDescending,
+	compareNumbersAscending,
+	compareNumbersDescending,
 	compareNumericsAscending,
 	compareNumericsDescending,
 	type ComparableType,

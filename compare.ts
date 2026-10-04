@@ -1,3 +1,8 @@
+export type ComparableType =
+	| bigint
+	| number
+	| string
+	| Date;
 function reverseOrderIndicator(n: number): number {
 	return ((n === 0) ? 0 : -n);
 }
@@ -7,22 +12,7 @@ function reverseOrderIndicator(n: number): number {
  * @param {bigint} b The second big integer for comparison.
  * @returns {number} Order indicator.
  */
-export function compareNumericsAscending(a: bigint, b: bigint): number;
-/**
- * Compare numbers in ascending order, compatible for `Array.prototype.sort`.
- * @param {number} a The first number for comparison.
- * @param {number} b The second number for comparison.
- * @returns {number} Order indicator.
- */
-export function compareNumericsAscending(a: number, b: number): number;
-/**
- * Compare `Date`s in ascending order, compatible for `Array.prototype.sort`.
- * @param {Date} a The first `Date` for comparison.
- * @param {Date} b The second `Date` for comparison.
- * @returns {number} Order indicator.
- */
-export function compareNumericsAscending(a: Date, b: Date): number;
-export function compareNumericsAscending(a: bigint | number | Date, b: bigint | number | Date): number {
+export function compareBigIntsAscending(a: bigint, b: bigint): number {
 	if (a < b) {
 		return -1;
 	}
@@ -37,23 +27,93 @@ export function compareNumericsAscending(a: bigint | number | Date, b: bigint | 
  * @param {bigint} b The second big integer for comparison.
  * @returns {number} Order indicator.
  */
-export function compareNumericsDescending(a: bigint, b: bigint): number;
+export function compareBigIntsDescending(a: bigint, b: bigint): number {
+	return reverseOrderIndicator(compareBigIntsAscending(a, b));
+}
 /**
- * Compare numbers in descending order, compatible for `Array.prototype.sort`.
- * @param {number} a The first number for comparison.
- * @param {number} b The second number for comparison.
+ * Compare `Date`s in ascending order, compatible for `Array.prototype.sort`.
+ * @param {Date} a The first `Date` for comparison.
+ * @param {Date} b The second `Date` for comparison.
  * @returns {number} Order indicator.
  */
-export function compareNumericsDescending(a: number, b: number): number;
+export function compareDatesAscending(a: Date, b: Date): number {
+	const aTimestamp: number = a.getTime();
+	const bTimestamp: number = b.getTime();
+	if (aTimestamp < bTimestamp) {
+		return -1;
+	}
+	if (aTimestamp > bTimestamp) {
+		return 1;
+	}
+	return 0;
+}
 /**
  * Compare `Date`s in descending order, compatible for `Array.prototype.sort`.
  * @param {Date} a The first `Date` for comparison.
  * @param {Date} b The second `Date` for comparison.
  * @returns {number} Order indicator.
  */
-export function compareNumericsDescending(a: Date, b: Date): number;
-export function compareNumericsDescending(a: bigint | number | Date, b: bigint | number | Date): number {
-	//@ts-ignore Overload.
+export function compareDatesDescending(a: Date, b: Date): number {
+	return reverseOrderIndicator(compareDatesAscending(a, b));
+}
+/**
+ * Compare numbers in ascending order, compatible for `Array.prototype.sort`.
+ * @param {number} a The first number for comparison.
+ * @param {number} b The second number for comparison.
+ * @returns {number} Order indicator.
+ */
+export function compareNumbersAscending(a: number, b: number): number {
+	if (a < b) {
+		return -1;
+	}
+	if (a > b) {
+		return 1;
+	}
+	return 0;
+}
+/**
+ * Compare numbers in descending order, compatible for `Array.prototype.sort`.
+ * @param {number} a The first number for comparison.
+ * @param {number} b The second number for comparison.
+ * @returns {number} Order indicator.
+ */
+export function compareNumbersDescending(a: number, b: number): number {
+	return reverseOrderIndicator(compareNumbersAscending(a, b));
+}
+function normalizeComparableNumeric(item: Exclude<ComparableType, string>): number {
+	if (typeof item === "bigint") {
+		return Number(item);
+	}
+	if (item instanceof Date) {
+		return item.getTime();
+	}
+	return item;
+}
+/**
+ * Compare numerics in ascending order, compatible for `Array.prototype.sort`.
+ * @param {Exclude<ComparableType,string>} a The first numeric for comparison.
+ * @param {Exclude<ComparableType,string>} b The second numeric for comparison.
+ * @returns {number} Order indicator.
+ */
+export function compareNumericsAscending(a: Exclude<ComparableType, string>, b: Exclude<ComparableType, string>): number {
+	if (typeof a === "bigint" && typeof b === "bigint") {
+		return compareBigIntsAscending(a, b);
+	}
+	if (a instanceof Date && b instanceof Date) {
+		return compareDatesAscending(a, b);
+	}
+	if (typeof a === "number" && typeof b === "number") {
+		return compareNumbersAscending(a, b);
+	}
+	return compareNumbersAscending(normalizeComparableNumeric(a), normalizeComparableNumeric(b));
+}
+/**
+ * Compare numerics in descending order, compatible for `Array.prototype.sort`.
+ * @param {Exclude<ComparableType,string>} a The first numeric for comparison.
+ * @param {Exclude<ComparableType,string>} b The second numeric for comparison.
+ * @returns {number} Order indicator.
+ */
+export function compareNumericsDescending(a: Exclude<ComparableType, string>, b: Exclude<ComparableType, string>): number {
 	return reverseOrderIndicator(compareNumericsAscending(a, b));
 }
 function dissectStringNumeric(item: string): readonly (bigint | string)[] {
@@ -69,11 +129,6 @@ function dissectStringNumeric(item: string): readonly (bigint | string)[] {
 	result.push(item.slice(index, item.length));
 	return result;
 }
-export type ComparableType =
-	| bigint
-	| number
-	| string
-	| Date;
 export interface ComparerOptions {
 	/**
 	 * Whether to enable language sensitive string comparison.
@@ -86,6 +141,9 @@ export interface ComparerOptions {
 	smartNumeric?: boolean;
 }
 export class Comparer {
+	get [Symbol.toStringTag](): string {
+		return "Comparer";
+	}
 	#intl?: Intl.Collator;
 	#smartNumeric: boolean;
 	constructor(options: ComparerOptions = {}) {
@@ -107,14 +165,6 @@ export class Comparer {
 			return 0;
 		}
 		if (
-			(typeof a === "bigint" && typeof b === "bigint") ||
-			(typeof a === "number" && typeof b === "number") ||
-			(a instanceof Date && b instanceof Date)
-		) {
-			//@ts-ignore Overload.
-			return compareNumericsAscending(a, b);
-		}
-		if (
 			(
 				typeof a === "bigint" ||
 				typeof a === "number" ||
@@ -125,11 +175,7 @@ export class Comparer {
 				b instanceof Date
 			)
 		) {
-			try {
-				return compareNumericsAscending(Number(a), Number(b));
-			} catch {
-				// CONTINUE
-			}
+			return compareNumericsAscending(a, b);
 		}
 		if (typeof a === "string" && typeof b === "string") {
 			if (this.#smartNumeric) {
@@ -155,7 +201,7 @@ export class Comparer {
 						continue;
 					}
 					if (typeof aPart === "bigint" && typeof bPart === "bigint") {
-						return compareNumericsAscending(aPart, bPart);
+						return compareBigIntsAscending(aPart, bPart);
 					}
 					const aPartRaw: string = String(aPart);
 					const bPartRaw: string = String(bPart);
