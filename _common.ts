@@ -17,10 +17,16 @@ export interface SortContext<T> {
 export function sorter<T>(contexts: readonly SortContext<T>[], options: SortOptions = {}): T[] {
 	const { descending = false }: SortOptions = options;
 	const comparer: Comparer = new Comparer(options);
-	const result: T[] = contexts.toSorted(({ select: a }: SortContext<T>, { select: b }: SortContext<T>): number => {
+	if (descending) {
+		return contexts.toSorted(({ select: a }: SortContext<T>, { select: b }: SortContext<T>): number => {
+			return comparer.compareDescending(a, b);
+		}).map(({ original }: SortContext<T>): T => {
+			return original;
+		});
+	}
+	return contexts.toSorted(({ select: a }: SortContext<T>, { select: b }: SortContext<T>): number => {
 		return comparer.compareAscending(a, b);
 	}).map(({ original }: SortContext<T>): T => {
 		return original;
 	});
-	return (descending ? result.reverse() : result);
 }

@@ -41,3 +41,27 @@ Deno.test("Strings 3", { permissions: "none" }, () => {
 	deepStrictEqual(sortElements(sample3), ["sample2.png", "sample3.png", "sample4.png", "sample5.png", "sample10.png"]);
 	deepStrictEqual(sortElements(sample3, { smartNumeric: false }), ["sample10.png", "sample2.png", "sample3.png", "sample4.png", "sample5.png"]);
 });
+Deno.test("Map 1", { permissions: "none" }, () => {
+	const sample = [
+		{ n: "ann", age: 30 },
+		{ n: "bob", age: 25 },
+		{ n: "cy", age: 30 },
+		{ n: "dee", age: 25 }
+	];
+	deepStrictEqual(sortElements(sample, (element) => {
+		return element.age;
+	}), [
+		{ n: "bob", age: 25 },
+		{ n: "dee", age: 25 },
+		{ n: "ann", age: 30 },
+		{ n: "cy", age: 30 }
+	]);
+	deepStrictEqual(sortElements(sample, (element) => {
+		return element.age;
+	}, { descending: true }), [
+		{ n: "ann", age: 30 },
+		{ n: "cy", age: 30 },
+		{ n: "bob", age: 25 },
+		{ n: "dee", age: 25 }
+	]);
+});
