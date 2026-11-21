@@ -37,15 +37,7 @@ export function compareBigIntsDescending(a: bigint, b: bigint): number {
  * @returns {number} Order indicator.
  */
 export function compareDatesAscending(a: Date, b: Date): number {
-	const aTimestamp: number = a.getTime();
-	const bTimestamp: number = b.getTime();
-	if (aTimestamp < bTimestamp) {
-		return -1;
-	}
-	if (aTimestamp > bTimestamp) {
-		return 1;
-	}
-	return 0;
+	return compareNumbersAscending(a.getTime(), b.getTime());
 }
 /**
  * Compare `Date`s in descending order, compatible for `Array.prototype.sort`.
@@ -63,6 +55,12 @@ export function compareDatesDescending(a: Date, b: Date): number {
  * @returns {number} Order indicator.
  */
 export function compareNumbersAscending(a: number, b: number): number {
+	if (Number.isNaN(a)) {
+		return -1;
+	}
+	if (Number.isNaN(b)) {
+		return 1;
+	}
 	if (a < b) {
 		return -1;
 	}
@@ -96,6 +94,12 @@ function normalizeComparableNumeric(item: Exclude<ComparableType, string>): numb
  * @returns {number} Order indicator.
  */
 export function compareNumericsAscending(a: Exclude<ComparableType, string>, b: Exclude<ComparableType, string>): number {
+	if (Number.isNaN(a)) {
+		return -1;
+	}
+	if (Number.isNaN(b)) {
+		return 1;
+	}
 	if (typeof a === "bigint" && typeof b === "bigint") {
 		return compareBigIntsAscending(a, b);
 	}
