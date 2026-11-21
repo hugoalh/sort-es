@@ -1,3 +1,4 @@
+//deno-lint-ignore-file hugoalh/no-nan -- Test
 import { deepStrictEqual } from "node:assert";
 import { sortElements } from "./elements.ts";
 Deno.test("BigInts 1", { permissions: "none" }, () => {
@@ -64,4 +65,16 @@ Deno.test("Map 1", { permissions: "none" }, () => {
 		{ n: "bob", age: 25 },
 		{ n: "dee", age: 25 }
 	]);
+});
+Deno.test("Edge 1", { permissions: "none" }, () => {
+	deepStrictEqual(sortElements([3, NaN, 1, 2]), [NaN, 1, 2, 3]);
+});
+Deno.test("Edge 2", { permissions: "none" }, () => {
+	deepStrictEqual(sortElements([3, 1, NaN, 2]), [NaN, 1, 2, 3]);
+});
+Deno.test("Edge 3", { permissions: "none" }, () => {
+	deepStrictEqual(sortElements([2n ** 53n + 1n, 2 ** 53, 2n ** 53n]), [2 ** 53, 2n ** 53n, 2n ** 53n + 1n]);
+});
+Deno.test("Edge 4", { permissions: "none" }, () => {
+	deepStrictEqual(sortElements([2n ** 53n + 1n, 2n ** 53n, 2 ** 53]), [2n ** 53n, 2 ** 53, 2n ** 53n + 1n]);
 });

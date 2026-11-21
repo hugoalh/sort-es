@@ -78,14 +78,39 @@ export function compareNumbersAscending(a: number, b: number): number {
 export function compareNumbersDescending(a: number, b: number): number {
 	return reverseOrderIndicator(compareNumbersAscending(a, b));
 }
-function normalizeComparableNumeric(item: Exclude<ComparableType, string>): number {
+interface NumericSerialize {
+	negative: boolean;
+	integer: bigint;
+	float: bigint | null;
+}
+function serializeNumeric(item: Exclude<ComparableType, string>): NumericSerialize | null {
 	if (typeof item === "bigint") {
-		return Number(item);
+		return {
+			negative: item < 0n,
+			integer: item,
+			float: null
+		};
 	}
-	if (item instanceof Date) {
-		return item.getTime();
+	const value: number = (item instanceof Date) ? item.getTime() : item;
+	if (Number.isNaN(value)) {
+		return null;
 	}
-	return item;
+	const valueNegative: boolean = value < 0;
+	const valueAbs: number = Math.abs(value);
+	const valueInteger: number = Math.floor(valueAbs);
+	if (Number.isInteger(valueAbs)) {
+		return {
+			negative: valueNegative,
+			integer: BigInt(valueInteger),
+			float: null
+		};
+	}
+	const valueFloatRaw: string = (valueAbs - valueInteger).toFixed(100);
+	return {
+		negative: valueNegative,
+		integer: BigInt(valueInteger),
+		float: valueFloatRaw.startsWith("1.") ? BigInt("9".repeat(100)) : BigInt(valueFloatRaw.slice(2))
+	};
 }
 /**
  * Compare numerics in ascending order, compatible for `Array.prototype.sort`.
@@ -109,7 +134,36 @@ export function compareNumericsAscending(a: Exclude<ComparableType, string>, b: 
 	if (typeof a === "number" && typeof b === "number") {
 		return compareNumbersAscending(a, b);
 	}
-	return compareNumbersAscending(normalizeComparableNumeric(a), normalizeComparableNumeric(b));
+	const aSerialize: NumericSerialize | null = serializeNumeric(a);
+	const bSerialize: NumericSerialize | null = serializeNumeric(b);
+	if (aSerialize === null) {
+		return -1;
+	}
+	if (bSerialize === null) {
+		return 1;
+	}
+	if (aSerialize.negative && !bSerialize.negative) {
+		return -1;
+	}
+	if (bSerialize.negative && !aSerialize.negative) {
+		return 1;
+	}
+	if (aSerialize.integer < bSerialize.integer) {
+		return -1;
+	}
+	if (aSerialize.integer > bSerialize.integer) {
+		return 1;
+	}
+	if (aSerialize.float === null && bSerialize.float === null) {
+		return 0;
+	}
+	if (aSerialize.float === null && bSerialize.float !== null) {
+		return -1;
+	}
+	if (bSerialize.float === null && aSerialize.float !== null) {
+		return 1;
+	}
+	return compareBigIntsAscending(aSerialize.float!, bSerialize.float!);
 }
 /**
  * Compare numerics in descending order, compatible for `Array.prototype.sort`.
